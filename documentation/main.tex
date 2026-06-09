@@ -1,0 +1,164 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{fancyhdr}
+
+\definecolor{primary}{HTML}{8b5cf6}
+\definecolor{secondary}{HTML}{06b6d4}
+\definecolor{darkbg}{HTML}{12101b}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    filecolor=magenta,      
+    urlcolor=secondary,
+    pdfpagemode=FullScreen,
+}
+
+\lstset{
+    backgroundcolor=\color{black!5},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\title{\textbf{WebCraft AI: Dynamic Web Prototype Synthesis and AI-Driven UI Mockup Generation}}
+\author{\textbf{Tompea Maria-Daria} \\ System Documentation \& Future Roadmap}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document outlines the architecture, design principles, and engineering specifications of \textbf{WebCraft AI}, an intelligent frontend interface that synthesizes user-selected keywords, typography configurations, and HSL palettes into personalized website mockups. The system leverages a dual-engine architecture: a frontend-driven Text-to-Image AI generation model (via Puter.js) for high-fidelity UI visual mockups, and a client-side layout compiler that renders fully interactive, responsive HTML/CSS code prototype structures inside a sandboxed viewport. Finally, we present a roadmap for next-generation expansion features, specifically focusing on how complex style combinations (e.g., \textit{Artistic} + \textit{Fitness}) can lead to highly custom, context-aware web layouts.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+\section{Project Overview}
+Traditional website generation platforms rely on static templates that require extensive manual modification. \textbf{WebCraft AI} shifts this paradigm by enabling users to describe their target website using a structured dictionary of 50 keywords divided into Industry, Vibe, Mood, Layout, and Target Audience categories. By combining these tag metrics with selected typography and color palettes, the system generates both a conceptual mockup image and a working prototype instantly, lowering the barrier to entry for modern web prototyping.
+
+\section{System Architecture}
+
+\subsection{User Interface \& State Machine}
+The application operates as a single-page application (SPA) running in the client browser, maintaining a central state object tracking:
+\begin{enumerate}
+    \item \textbf{Selected Tags}: A bounded set of up to 8 tag parameters.
+    \item \textbf{Theme Parameters}: CSS color variables (Primary, Secondary, Canvas Background, Text) and dynamic Google Font references.
+    \item \textbf{Active Studio Context}: Switchboard for changing viewports (Desktop/Tablet/Mobile) and tabs (Mockup/Prototype/Source Code).
+\end{enumerate}
+
+\subsection{The Dual-Engine System}
+The core logic resides in a bifurcated generation pipeline:
+\begin{itemize}
+    \item \textbf{Image Engine (Puter.js AI)}: Integrates with the browser-based Puter.js AI SDK to execute a text-to-image API request asynchronously. The prompt is automatically structured from the active tags, typography, and color tokens, compiling it into an optimized Stable Diffusion description.
+    \item \textbf{Prototype Engine (Local Compiler)}: Dynamically compiles raw HTML, custom CSS rules, and semantic scripts. It formats the page layout, imports Google Fonts, overrides CSS custom properties with selected HSL/Hex color values, and writes the output directly to a sandboxed iframe using `srcdoc` streaming.
+\end{itemize}
+
+\section{Design System: Palettes \& Typography}
+
+\subsection{Curated Palettes}
+WebCraft AI maps color combinations to HSL color spaces to ensure readable contrast ratios. Curated default theme presets include:
+\begin{table}[h]
+\centering
+\caption{Curated Theme Palette Configurations}
+\vspace{0.5em}
+\begin{tabular}{lllll}
+\toprule
+\textbf{Preset Name} & \textbf{Primary Color} & \textbf{Secondary Color} & \textbf{Canvas Color} & \textbf{Text Color} \\
+\midrule
+Midnight Neon & \#8B5CF6 & \#06B6D4 & \#09080E & \#F3F4F6 \\
+Sunset Minimalist & \#F97316 & \#E11D48 & \#FAFAF9 & \#1C1917 \\
+Nordic Spruce & \#10B981 & \#3B82F6 & \#0F172A & \#F8FAFC \\
+Brutalist Peach & \#FF3E3E & \#FACC15 & \#FFFBEB & \#1C1917 \\
+Cyberpunk Grid & \#FF007F & \#00F0FF & \#050508 & \#FFFFFF \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Typography Framework}
+The typography engine imports Google Fonts dynamically at runtime. It loads serif styles for traditional, organic, or elegant vibed websites, monospace fonts for developer/hacker portfolios, and modern geometric sans-serif fonts for SaaS dashboards. Examples of loaded families include \textit{Outfit, Plus Jakarta Sans, Space Grotesk, Syne, Cabinet Grotesk}, and \textit{JetBrains Mono}.
+
+\newpage
+
+\section{Dynamic Contextualization (e.g., Artistic + Fitness)}
+To solve the issue where selecting different tag pairs (such as \textbf{Artistic} + \textbf{Fitness}) feels too generic, we propose a rules-based layout engine that adapts components based on selected tag combinations:
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Traditional Fitness Site}
+\begin{itemize}
+    \item Rigid grid alignment
+    \item Solid backgrounds
+    \item Standard list items (Classes, Trainer)
+    \item Corporate blue/red accents
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Artistic + Fitness Site}
+\begin{itemize}
+    \item Overlapping asymmetrical sections
+    \item Liquid glassmorphism, paint brush highlights
+    \item Dynamic workout movement gallery
+    \item Neon organic gradients, custom fonts
+\end{itemize}
+\end{minipage}
+\end{figure}
+
+When \textbf{Fitness} is selected alongside \textbf{Artistic} or \textbf{Retro}, the layout compiler shifts:
+\begin{itemize}
+    \item \textbf{Structural Shifting}: Switches from a structured corporate grid to an overlapping, asymmetrical layout with floating canvas elements.
+    \item \textbf{UI Element Treatment}: Converts standard card grids into glassmorphic cards with custom paint-like border highlights and curved organic borders (`border-radius: 40px 10px 40px 10px`).
+    \item \textbf{Content Copy}: Overwrites generic fitness text with creative slogans, e.g., ``Sculpt Your Canvas: Where Physiology Meets Fine Art.''
+\end{itemize}
+
+\section{Future Roadmap: Mind-Blowing Features}
+
+\subsection{Agentic Code Orchestration (LLM Multi-Agent System)}
+Instead of relying on rigid, pre-built template compilers, future generations will delegate generation to a team of micro-agents:
+\begin{itemize}
+    \item \textbf{Layout Architect Agent}: Evaluates user keywords and designs a custom JSON representation of the layout tree.
+    \item \textbf{Tailwind Design Agent}: Generates unique components and styles them with customized utility classes matching the vibe.
+    \item \textbf{Interactive Animation Agent}: Injects custom micro-animations (e.g., Framer Motion or GSAP scroll-triggered actions) matching the vibe.
+\end{itemize}
+
+\subsection{Neuro-Stylist (Visual-to-Code Pipeline)}
+Currently, the AI mockup image and the interactive code prototype are generated separately. The future architecture will link these using a Visual-to-Code pipeline:
+\begin{enumerate}
+    \item Generate the UI mockup image via Stable Diffusion / Midjourney.
+    \item Feed the generated image into a multimodal Vision model (like Gemini 1.5 Pro).
+    \item The model extracts CSS variables, element coordinates, typography spacings, and layout flow to write HTML/Tailwind code that matches the visual layout pixel-for-pixel.
+\end{enumerate}
+
+\subsection{Interactive 3D Environments \& Physics}
+Websites under the \textit{Gaming, Futuristic}, or \textit{Artistic} tags will dynamically load interactive 3D assets:
+\begin{itemize}
+    \item Dynamically load a Canvas and initialize a lightweight 3D web viewer (using Three.js / Spline).
+    \item Embed interactive particles that respond to mouse movements, or integrate a simple physics engine (like Matter.js) where website layout cards fall and react to gravity inside the viewport.
+\end{itemize}
+
+\subsection{Emotional Semantic Styling}
+Instead of relying on manual color pickers, the system will run sentiment analysis on selected tags. Selecting tags like \textit{Vibrant + Playful + Kids} will generate pastel-toned bouncing bouncy physics shapes, whereas tags like \textit{Luxury + Elegant + Dark} will auto-generate gold-leaf borders, soft radial gradients, and slow cinematic reveal transitions on scroll.
+
+\end{document}
