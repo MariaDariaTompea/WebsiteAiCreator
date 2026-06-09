@@ -709,8 +709,267 @@ function compilePrototypeCode() {
         </div>
       `;
     }
+  } else if (industry === "Agency") {
+    if (isArtisticVibe) {
+      headline = "The Narrative Lab";
+      subheading = "We synthesize custom brands, digital spaces, and visual architectures for progressive organizations.";
+      buttonText = "Start Project";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🎭</div>
+          <h3>Brand Identity</h3>
+          <p>Formulating distinct visual systems, custom typography scales, and tactile layouts.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌀</div>
+          <h3>Interactive Media</h3>
+          <p>Shaping unique WebGL designs and client browser frameworks that react to user inputs.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✒️</div>
+          <h3>Editorial Art</h3>
+          <p>Bridging classical typography standards with digital grids for premium editorial blogs.</p>
+        </div>
+      `;
+    } else if (isCyberpunkVibe) {
+      headline = "Apex Cybernetic Agency";
+      subheading = "Deploy tactical communication systems, subnet portals, and decentralized interface structures.";
+      buttonText = "Access Terminal";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Neural Interface Systems</h3>
+          <p>Structuring browser applications designed for extreme speed and real-time interaction.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h3>Secure Brand Crypts</h3>
+          <p>Configuring secure server networks and custom encryption nodes for corporate safety.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📡</div>
+          <h3>Hologrid Marketing</h3>
+          <p>High-frequency data targeting and audience routing metrics across private subnets.</p>
+        </div>
+      `;
+    } else {
+      headline = "Next-Gen Creative Agency";
+      subheading = "Cooperating with modern teams to build outstanding digital products and expand client conversion loops.";
+      buttonText = "Schedule Discovery Call";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">💻</div>
+          <h3>Interface Engineering</h3>
+          <p>Building highly optimized, accessible React and web layouts using CSS variables.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📈</div>
+          <h3>Growth Analytics</h3>
+          <p>Analyzing search queries, loading vitals, and user paths to double conversion.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎨</div>
+          <h3>Product Strategy</h3>
+          <p>Researching market segments to design products that stand out from the competition.</p>
+        </div>
+      `;
+    }
+  } else if (industry === "Blog") {
+    if (isArtisticVibe) {
+      headline = "Reflections \& Textures";
+      subheading = "An abstract archive of contemporary design ideas, art studies, and modern frontend structures.";
+      buttonText = "Read Journal";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">📐</div>
+          <h3>Deconstructing Grid Geometry</h3>
+          <p>How organic asymmetrical spacing challenges standard layout systems in modern UI design.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🎨</div>
+          <h3>Painting with JavaScript</h3>
+          <p>Using Canvas particles systems and requestAnimationFrame to make interfaces react to mouse movements.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">📖</div>
+          <h3>Tactile Typography Scales</h3>
+          <p>Why using serif headers creates emotional responses and increases user attention span.</p>
+        </div>
+      `;
+    } else if (isMinimalistVibe) {
+      headline = "Simple Log";
+      subheading = "Raw, uncomplicated logs detailing web architecture, simple CSS, and minimalist life principles.";
+      buttonText = "Read Log";
+      cardsHtml = `
+        <div class="card">
+          <h3>Writing Zero-Dependency APIs</h3>
+          <p>Reducing external packaging size to keep server routines lightning fast and secure.</p>
+        </div>
+        <div class="card">
+          <h3>Less is More: CSS Variables</h3>
+          <p>How using simple variables replaces complex framework stylesheets and saves bundle weight.</p>
+        </div>
+        <div class="card">
+          <h3>Unraveling Layout Complexity</h3>
+          <p>A manifesto on why single-column mobile-first designs are superior for user layouts.</p>
+        </div>
+      `;
+    } else {
+      headline = "The Technical Sandbox";
+      subheading = "Regular guides exploring clean coding practices, modern design setups, and developer hacks.";
+      buttonText = "Browse Articles";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">📝</div>
+          <h3>Comprehensive CSS Grid Guide</h3>
+          <p>Learn how to build complex responsive grids without a single media query.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Mastering Git Hooks</h3>
+          <p>Automate code formatting and testing pipelines before pushing commits to remote branches.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🛡️</div>
+          <h3>Secure Sandbox Routing</h3>
+          <p>Preventing cross-site scripting vulnerabilities when loading user code in client iframe headers.</p>
+        </div>
+      `;
+    }
+  } else if (industry === "Real Estate") {
+    if (isArtisticVibe || style === "Glassmorphism") {
+      headline = "Monolith Estates";
+      subheading = "Curated architectural masterworks and premium luxury residencies designed for aesthetic living.";
+      buttonText = "Explore Estates";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">🏛️</div>
+          <h3>The Obsidian Villa</h3>
+          <p>Featuring raw basalt walls, infinity water pools, and solar glass ceiling layers.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🌇</div>
+          <h3>Horizon Heights Loft</h3>
+          <p>Overlapping steel structures, floor-to-ceiling glass grids, and panoramic city vistas.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🌿</div>
+          <h3>Nordic Spruce Pavillion</h3>
+          <p>Constructed around living forest trees with organic cedar panels and copper frames.</p>
+        </div>
+      `;
+    } else {
+      headline = "Metropolitan Property Group";
+      subheading = "Modern residential real estate listings in prime urban districts with smart-home features.";
+      buttonText = "Browse Listings";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">🏢</div>
+          <h3>Sky Garden Suite</h3>
+          <p>2 Bed • 2 Bath • Smart automation, rooftop gardens, private elevator access.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🏡</div>
+          <h3>Riverfront Townhouse</h3>
+          <p>3 Bed • 3 Bath • Multi-car garage, local timber decking, solar array paneling.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🌆</div>
+          <h3>Executive Penthouse</h3>
+          <p>3 Bed • 4 Bath • High frequency smart cooling, marble bars, skyline balconies.</p>
+        </div>
+      `;
+    }
+  } else if (industry === "Education") {
+    if (isPlayfulVibe) {
+      headline = "Cosmic Academy";
+      subheading = "Fun, gamified learning paths exploring physics, scripting, and interactive design for young creators.";
+      buttonText = "Start Learning";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">🚀</div>
+          <h3>Space Pioneers Path</h3>
+          <p>Build rocket layout controllers while learning gravity physics loops and equations.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🦖</div>
+          <h3>DinoScript Playground</h3>
+          <p>Write simple JavaScript scripts to animate prehistoric assets across web canvas files.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🤖</div>
+          <h3>RoboBuilder Laboratory</h3>
+          <p>Assemble custom CSS grids to design interactive interfaces that command bot modules.</p>
+        </div>
+      `;
+    } else {
+      headline = "Vanguard Institute";
+      subheading = "Acquire professional certifications in software engineering, UI design, and cloud database pipelines.";
+      buttonText = "View Class Syllabus";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🧠</div>
+          <h3>Systems Architecture</h3>
+          <p>Learn node load balancing, server clustering, and distributed database setups.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎨</div>
+          <h3>Modern Interface Systems</h3>
+          <p>Study CSS custom variables, typography layout grids, and accessible styling.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h3>Data Protection Codes</h3>
+          <p>Implement secure auth tokens, encryption standards, and network firewall protocols.</p>
+        </div>
+      `;
+    }
+  } else if (industry === "Mobile App") {
+    if (isCyberpunkVibe) {
+      headline = "Synapse Mobile OS";
+      subheading = "A secure, biometric mobile operating layout built for high-tech communication and subnets.";
+      buttonText = "Link Device";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🧬</div>
+          <h3>Bio-Telemetry Sync</h3>
+          <p>Synchronize vascular heartbeat signals with system authorization protocols.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📡</div>
+          <h3>Subnet Navigator</h3>
+          <p>Browse decentralized subnetworks securely using client onion proxy channels.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🧠</div>
+          <h3>Neural Sync Assistant</h3>
+          <p>Automate phone scheduling and routine scripts based on vascular metrics.</p>
+        </div>
+      `;
+    } else {
+      headline = "Aero: Your Daily Routine";
+      subheading = "A beautiful, gesture-driven productivity application designed to reduce digital noise and organize schedules.";
+      buttonText = "Download App";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🗓️</div>
+          <h3>Smart Scheduler</h3>
+          <p>Group tasks automatically based on current location and schedule limits.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <h3>Contextual Metrics</h3>
+          <p>Simple graphs show daily focus rings, hydration levels, and exercise patterns.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>One-Gesture Logging</h3>
+          <p>Log hydration and metrics instantly from your home screen with quick gestures.</p>
+        </div>
+      `;
+    }
   } else {
-    // SaaS/Software
+    // SaaS/Software/Generic
     if (isCyberpunkVibe) {
       headline = "Hologrid: Neural Infrastructure";
       subheading = "Deploy distributed computing layers instantly across private decentralised subnetworks.";
@@ -1022,6 +1281,83 @@ function compilePrototypeCode() {
     `;
   }
   
+  // Compile vibe scripts to run client-side in the sandbox
+  let vibeScript = "";
+  if (isArtisticVibe) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const blob = document.createElement('div');
+        blob.style.cssText = "position:fixed; width:450px; height:450px; background:radial-gradient(circle, var(--primary) 0%, transparent 70%); filter:blur(90px); opacity:0.18; pointer-events:none; z-index:-1; transition: transform 0.15s ease-out; transform:translate(-50%, -50%);";
+        document.body.appendChild(blob);
+        document.addEventListener('mousemove', (e) => {
+          blob.style.left = e.clientX + 'px';
+          blob.style.top = e.clientY + 'px';
+        });
+      });
+    `;
+  } else if (isCyberpunkVibe) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const body = document.getElementById('logs-body');
+        if (!body) return;
+        const logs = [
+          "CONNECTING TO NETWORK SUBNET...",
+          "DECRYPTING SECURITY COEFFICIENTS: SUCCESS",
+          "SECURE DATA LINK BRIDGE ACTIVE.",
+          "RUNNING LIVE PIPELINE DIAGNOSTICS...",
+          "STABILIZING CORE GRID LOAD CHANNELS...",
+          "NODE SYSTEM PERFORMANCE STATUS: OPTIMAL."
+        ];
+        let idx = 0;
+        function addLog() {
+          if (!body) return;
+          const d = document.createElement('div');
+          d.innerHTML = '> ' + logs[idx % logs.length];
+          d.style.color = 'var(--secondary)';
+          d.style.fontFamily = 'monospace';
+          d.style.fontSize = '0.75rem';
+          d.style.marginBottom = '0.2rem';
+          body.appendChild(d);
+          idx++;
+          if (body.children.length > 3) {
+            body.removeChild(body.firstChild);
+          }
+          setTimeout(addLog, 2500 + Math.random() * 2000);
+        }
+        addLog();
+      });
+    `;
+  } else if (isPlayfulVibe) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const emojis = ['🎈', '✨', '⭐', '🦄', '🍿', '🎉', '🎨', '🚀', '🌈'];
+        document.addEventListener('click', (e) => {
+          const p = document.createElement('div');
+          p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          p.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; font-size: 2rem; pointer-events:none; z-index:9999; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translate(-50%, -50%); opacity: 1;";
+          document.body.appendChild(p);
+          requestAnimationFrame(() => {
+            p.style.transform = "translate(-50%, -180%) scale(1.6) rotate(15deg)";
+            p.style.opacity = "0";
+          });
+          setTimeout(() => p.remove(), 800);
+        });
+      });
+    `;
+  } else if (isBrutalistVibe) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const bar = document.createElement('div');
+        bar.style.cssText = "position:fixed; top:0; left:0; height:8px; background:var(--secondary); border-bottom:3px solid var(--text); z-index:9999; width:0%;";
+        document.body.appendChild(bar);
+        window.addEventListener('scroll', () => {
+          const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+          bar.style.width = pct + '%';
+        });
+      });
+    `;
+  }
+  
   // Assemble CSS
   state.generatedCss = `
     @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;600;700;800;900&display=swap');
@@ -1277,6 +1613,12 @@ function compilePrototypeCode() {
         <h1>${headline}</h1>
         <p>${subheading}</p>
         <button class="btn btn-primary">${buttonText}</button>
+        ${isCyberpunkVibe ? `
+        <div id="cyber-console" style="margin-top: 2.5rem; font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.5); border: 2px solid var(--primary); padding: 1rem; border-radius: 0; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; max-height: 120px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+          <div style="color: var(--secondary); margin-bottom: 0.5rem; font-weight: bold; font-family: monospace;">[LINKED TELEMETRY NODE DATA - ACTIVE]</div>
+          <div id="logs-body"></div>
+        </div>
+        ` : ''}
       </div>
     </header>
     
@@ -1290,6 +1632,7 @@ function compilePrototypeCode() {
       <p>&copy; ${new Date().getFullYear()} ${industry}. Generated by WebCraft AI.</p>
     </footer>
   </div>
+  ${vibeScript ? `<script>${vibeScript}</script>` : ''}
 </body>
 </html>`;
 }
