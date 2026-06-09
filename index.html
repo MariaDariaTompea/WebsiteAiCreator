@@ -70,6 +70,9 @@
               </div>
             </div>
           </div>
+          <button id="open-palette-creator" class="custom-palette-create-btn">
+            🎨 Create Custom Palette
+          </button>
         </div>
 
         <!-- Font picker -->
@@ -194,6 +197,82 @@
   <div class="toast" id="toast">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-secondary);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <span id="toast-message">Success!</span>
+  </div>
+
+  <!-- Color Wheel Modal Overlay -->
+  <div id="color-wheel-modal" class="modal-overlay">
+    <div class="modal-content glass-panel">
+      <div class="modal-header">
+        <h3>🎨 Interactive Palette Creator</h3>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <p class="modal-subtitle">Pick or drag colors on the Photoshop-style color circle to design your custom layout palette.</p>
+        
+        <div class="palette-creator-grid">
+          <!-- Color Wheel Canvas and brightness range -->
+          <div class="color-wheel-wrapper">
+            <canvas id="color-wheel-canvas" width="220" height="220"></canvas>
+            <div class="wheel-brightness-container">
+              <label>Brightness: <span id="brightness-val">80%</span></label>
+              <input type="range" id="wheel-brightness" min="0" max="100" value="80">
+            </div>
+          </div>
+          
+          <!-- Selected Color Slots -->
+          <div class="color-slots-container">
+            <div class="color-slot active" data-slot="primary">
+              <div class="slot-dot" style="background-color: #8b5cf6;"></div>
+              <div class="slot-info">
+                <span class="slot-name">Primary</span>
+                <span class="slot-hex">#8B5CF6</span>
+              </div>
+            </div>
+            
+            <div class="color-slot" data-slot="secondary">
+              <div class="slot-dot" style="background-color: #06b6d4;"></div>
+              <div class="slot-info">
+                <span class="slot-name">Secondary</span>
+                <span class="slot-hex">#06B6D4</span>
+              </div>
+            </div>
+            
+            <div class="color-slot" data-slot="bg">
+              <div class="slot-dot" style="background-color: #09080e;"></div>
+              <div class="slot-info">
+                <span class="slot-name">Canvas</span>
+                <span class="slot-hex">#09080E</span>
+              </div>
+            </div>
+            
+            <div class="color-slot" data-slot="text">
+              <div class="slot-dot" style="background-color: #f3f4f6;"></div>
+              <div class="slot-info">
+                <span class="slot-name">Text</span>
+                <span class="slot-hex">#F3F4F6</span>
+              </div>
+            </div>
+            
+            <!-- Harmony Rules generator buttons -->
+            <div class="harmony-rules">
+              <span class="label-sub">HARMONY RULE</span>
+              <div class="harmony-buttons">
+                <button type="button" class="harmony-btn" data-rule="monochrome">Monochromatic</button>
+                <button type="button" class="harmony-btn" data-rule="complement">Complementary</button>
+                <button type="button" class="harmony-btn" data-rule="analogous">Analogous</button>
+                <button type="button" class="harmony-btn" data-rule="triadic">Triadic</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button id="cancel-palette-btn" class="btn btn-secondary">Cancel</button>
+        <button id="apply-palette-btn" class="btn btn-primary">Apply Palette</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://js.puter.com/v2/"></script>

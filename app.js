@@ -98,6 +98,22 @@ const THEME_PRESETS = {
     bg: "#f8fafc",
     text: "#0f172a",
     font: "Montserrat"
+  },
+  sakura_red: {
+    name: "Scarlet Sakura",
+    primary: "#e11d48",
+    secondary: "#fb7185",
+    bg: "#180205",
+    text: "#ffe4e6",
+    font: "Playfair Display"
+  },
+  romantic_red: {
+    name: "Velvet Passion",
+    primary: "#dc2626",
+    secondary: "#fbbf24",
+    bg: "#fff1f2",
+    text: "#450a0a",
+    font: "Playfair Display"
   }
 };
 
@@ -185,6 +201,7 @@ function init() {
   renderPresets();
   setupFonts();
   setupEventListeners();
+  setupPaletteCreator();
   updateColorsInUI();
   renderMenuLinks();
   updatePreviewPlaceholder();
@@ -2046,6 +2063,9 @@ function compilePrototypeCode() {
           width = canvas.width = window.innerWidth;
           height = canvas.height = window.innerHeight;
         });
+
+        const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#f472b6';
+        const secondaryColor = getComputedStyle(document.body).getPropertyValue('--secondary').trim() || '#fbcfe8';
         
         const petals = [];
         for (let i = 0; i < 35; i++) {
@@ -2068,12 +2088,14 @@ function compilePrototypeCode() {
           
           ctx.beginPath();
           ctx.ellipse(0, 0, p.r * 1.5, p.r, 0, 0, 2 * Math.PI);
-          ctx.fillStyle = "rgba(244, 114, 182, 0.45)";
+          ctx.globalAlpha = 0.45;
+          ctx.fillStyle = primaryColor;
           ctx.fill();
           
           ctx.beginPath();
           ctx.ellipse(-p.r * 0.2, 0, p.r * 0.8, p.r * 0.6, 0, 0, 2 * Math.PI);
-          ctx.fillStyle = "rgba(251, 207, 232, 0.6)";
+          ctx.globalAlpha = 0.6;
+          ctx.fillStyle = secondaryColor;
           ctx.fill();
           
           ctx.restore();
@@ -2115,6 +2137,9 @@ function compilePrototypeCode() {
           width = canvas.width = window.innerWidth;
           height = canvas.height = window.innerHeight;
         });
+
+        const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#a78bfa';
+        const secondaryColor = getComputedStyle(document.body).getPropertyValue('--secondary').trim() || '#ef4444';
         
         const sparks = [];
         for (let i = 0; i < 40; i++) {
@@ -2144,9 +2169,10 @@ function compilePrototypeCode() {
             
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
-            ctx.fillStyle = "rgba(239, 68, 68, " + s.alpha + ")";
+            ctx.fillStyle = secondaryColor;
+            ctx.globalAlpha = s.alpha;
             ctx.shadowBlur = 10;
-            ctx.shadowColor = "#ef4444";
+            ctx.shadowColor = secondaryColor;
             ctx.fill();
             ctx.shadowBlur = 0;
           }
@@ -3748,6 +3774,385 @@ function setupSketchInteractionListeners() {
       compileAndSavePrototype();
     });
   });
+}
+
+// Color Wheel Custom Palette Creator Logic
+function setupPaletteCreator() {
+  const openBtn = document.getElementById("open-palette-creator");
+  const modal = document.getElementById("color-wheel-modal");
+  const closeBtn = document.getElementById("close-modal-btn");
+  const cancelBtn = document.getElementById("cancel-palette-btn");
+  const applyBtn = document.getElementById("apply-palette-btn");
+  const canvas = document.getElementById("color-wheel-canvas");
+  const brightnessSlider = document.getElementById("wheel-brightness");
+  const brightnessVal = document.getElementById("brightness-val");
+  
+  if (!openBtn || !modal || !canvas) return;
+  
+  // Local state for the color wheel editor
+  const localColors = {
+    primary: state.theme.primary,
+    secondary: state.theme.secondary,
+    bg: state.theme.bg,
+    text: state.theme.text
+  };
+  
+  let activeSlot = "primary"; // primary, secondary, bg, text
+  let brightness = 80;
+  let isDragging = false;
+  
+  // Open modal
+  openBtn.addEventListener("click", () => {
+    // Sync current app colors to modal local state
+    localColors.primary = state.theme.primary;
+    localColors.secondary = state.theme.secondary;
+    localColors.bg = state.theme.bg;
+    localColors.text = state.theme.text;
+    
+    // Reset active slot
+    setActiveSlot("primary");
+    
+    // Set brightness based on active slot's lightness (or default to 80)
+    const hsl = hexToHsl(localColors.primary);
+    brightness = hsl.l;
+    brightnessSlider.value = brightness;
+    brightnessVal.textContent = brightness + "%";
+    
+    // Open modal animation class
+    modal.classList.add("active");
+    
+    // Render
+    drawWheelAndHandles();
+    updateSlotDots();
+  });
+  
+  // Close modal
+  function closeModal() {
+    modal.classList.remove("active");
+  }
+  
+  closeBtn.addEventListener("click", closeModal);
+  cancelBtn.addEventListener("click", closeModal);
+  
+  // Active Slot Selector listeners
+  document.querySelectorAll(".color-slot").forEach(slot => {
+    slot.addEventListener("click", () => {
+      const slotKey = slot.dataset.slot;
+      setActiveSlot(slotKey);
+      
+      // Update slider value to match the clicked slot's lightness
+      const hsl = hexToHsl(localColors[slotKey]);
+      brightness = hsl.l;
+      brightnessSlider.value = brightness;
+      brightnessVal.textContent = brightness + "%";
+      
+      drawWheelAndHandles();
+    });
+  });
+  
+  function setActiveSlot(slotKey) {
+    activeSlot = slotKey;
+    document.querySelectorAll(".color-slot").forEach(slot => {
+      if (slot.dataset.slot === slotKey) {
+        slot.classList.add("active");
+      } else {
+        slot.classList.remove("active");
+      }
+    });
+  }
+  
+  // Update slot dots UI in modal
+  function updateSlotDots() {
+    document.querySelectorAll(".color-slot").forEach(slot => {
+      const slotKey = slot.dataset.slot;
+      const dot = slot.querySelector(".slot-dot");
+      const hexText = slot.querySelector(".slot-hex");
+      if (dot) dot.style.backgroundColor = localColors[slotKey];
+      if (hexText) hexText.textContent = localColors[slotKey].toUpperCase();
+    });
+  }
+  
+  // Brightness slider event
+  brightnessSlider.addEventListener("input", (e) => {
+    brightness = parseInt(e.target.value);
+    brightnessVal.textContent = brightness + "%";
+    
+    // Re-evaluate active slot's color using the new lightness
+    const hsl = hexToHsl(localColors[activeSlot]);
+    const rgb = hslToRgb(hsl.h, hsl.s, brightness);
+    localColors[activeSlot] = rgbToHex(rgb.r, rgb.g, rgb.b);
+    
+    updateSlotDots();
+    drawWheelAndHandles();
+  });
+  
+  // Apply Palette
+  applyBtn.addEventListener("click", () => {
+    state.theme.primary = localColors.primary;
+    state.theme.secondary = localColors.secondary;
+    state.theme.bg = localColors.bg;
+    state.theme.text = localColors.text;
+    
+    // Update dashboard inputs and values
+    updateColorsInUI();
+    removePresetSelectionHighlight();
+    
+    // Recompile prototype and reload active preview
+    if (state.selectedTags.size > 0) {
+      compilePrototypeCode();
+      if (state.activeTab === "prototype" || state.activeTab === "code") {
+        renderActiveStudioTab();
+      }
+    }
+    
+    showToast("Custom palette applied successfully!");
+    closeModal();
+  });
+  
+  // Harmony rules logic
+  document.querySelectorAll(".harmony-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const rule = btn.dataset.rule;
+      applyHarmony(rule);
+    });
+  });
+  
+  function applyHarmony(rule) {
+    // Base color is the current primary color
+    const baseHsl = hexToHsl(localColors.primary);
+    
+    if (rule === "monochrome") {
+      // Vary saturation and lightness
+      localColors.secondary = hslToHex((baseHsl.h + 15) % 360, Math.max(10, baseHsl.s - 20), Math.min(90, baseHsl.l + 15));
+      localColors.bg = hslToHex(baseHsl.h, Math.max(10, baseHsl.s - 40), 10); // very dark
+      localColors.text = hslToHex(baseHsl.h, 15, 95); // very light
+    } else if (rule === "complement") {
+      // Opposite hue
+      localColors.secondary = hslToHex((baseHsl.h + 180) % 360, baseHsl.s, baseHsl.l);
+      localColors.bg = hslToHex(baseHsl.h, 10, 8); // dark background
+      localColors.text = hslToHex((baseHsl.h + 180) % 360, 20, 95); // light text
+    } else if (rule === "analogous") {
+      // Adjacent hues
+      localColors.secondary = hslToHex((baseHsl.h + 30) % 360, baseHsl.s, baseHsl.l);
+      localColors.bg = hslToHex((baseHsl.h - 30 + 360) % 360, 15, 8);
+      localColors.text = hslToHex((baseHsl.h + 30) % 360, 20, 95);
+    } else if (rule === "triadic") {
+      // Spaced 120 deg apart
+      localColors.secondary = hslToHex((baseHsl.h + 120) % 360, baseHsl.s, baseHsl.l);
+      localColors.text = hslToHex((baseHsl.h + 240) % 360, baseHsl.s, Math.max(80, baseHsl.l));
+      localColors.bg = hslToHex(baseHsl.h, 10, 8);
+    }
+    
+    updateSlotDots();
+    drawWheelAndHandles();
+    showToast(`Generated ${rule} palette`);
+  }
+  
+  // Canvas coordinate handlers and click tracker
+  function getMousePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+  
+  function handleCanvasInteraction(e) {
+    const pos = getMousePos(e);
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const radius = canvas.width / 2 - 5;
+    
+    const rx = pos.x - cx;
+    const ry = pos.y - cy;
+    const d = Math.sqrt(rx * rx + ry * ry);
+    
+    if (d <= radius) {
+      let angle = Math.atan2(ry, rx);
+      if (angle < 0) angle += 2 * Math.PI;
+      
+      const hue = Math.round((angle * 180) / Math.PI);
+      const saturation = Math.round((d / radius) * 100);
+      
+      const rgb = hslToRgb(hue, saturation, brightness);
+      localColors[activeSlot] = rgbToHex(rgb.r, rgb.g, rgb.b);
+      
+      updateSlotDots();
+      drawWheelAndHandles();
+    }
+  }
+  
+  canvas.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    handleCanvasInteraction(e);
+  });
+  
+  window.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      handleCanvasInteraction(e);
+    }
+  });
+  
+  window.addEventListener("mouseup", () => {
+    isDragging = false;
+  });
+  
+  // Canvas drawing loops
+  function drawWheelAndHandles() {
+    drawColorWheel(canvas, brightness);
+    
+    // Draw coordinates handle for all 4 slots
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const radius = canvas.width / 2 - 5;
+    
+    Object.entries(localColors).forEach(([slotKey, hexColor]) => {
+      const hsl = hexToHsl(hexColor);
+      const angle = (hsl.h * Math.PI) / 180;
+      const d = (hsl.s / 100) * radius;
+      
+      const hx = cx + d * Math.cos(angle);
+      const hy = cy + d * Math.sin(angle);
+      
+      // Draw handle
+      const ctx = canvas.getContext("2d");
+      ctx.beginPath();
+      ctx.arc(hx, hy, slotKey === activeSlot ? 8 : 6, 0, 2 * Math.PI);
+      ctx.fillStyle = hexColor;
+      ctx.strokeStyle = slotKey === activeSlot ? "#ffffff" : "rgba(255, 255, 255, 0.8)";
+      ctx.lineWidth = slotKey === activeSlot ? 3 : 2;
+      
+      // Shadow effect
+      ctx.shadowColor = "rgba(0, 0, 0, 0.6)";
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2;
+      
+      ctx.fill();
+      ctx.stroke();
+      
+      // Reset shadow
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+    });
+  }
+}
+
+// Draw HSL color spectrum on wheel canvas
+function drawColorWheel(canvas, brightness) {
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = width / 2 - 5;
+  
+  const imageData = ctx.createImageData(width, height);
+  const data = imageData.data;
+  
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const rx = x - cx;
+      const ry = y - cy;
+      const d = Math.sqrt(rx * rx + ry * ry);
+      
+      if (d <= radius) {
+        let angle = Math.atan2(ry, rx);
+        if (angle < 0) angle += 2 * Math.PI;
+        
+        const hue = (angle * 180) / Math.PI;
+        const saturation = (d / radius) * 100;
+        
+        const rgb = hslToRgb(hue, saturation, brightness);
+        
+        const index = (y * width + x) * 4;
+        data[index] = rgb.r;
+        data[index + 1] = rgb.g;
+        data[index + 2] = rgb.b;
+        data[index + 3] = 255;
+      }
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
+
+// HSL to RGB conversion helper
+function hslToRgb(h, s, l) {
+  h /= 360;
+  s /= 100;
+  l /= 100;
+  let r, g, b;
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p, q, t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+  return {
+    r: Math.round(r * 255),
+    g: Math.round(g * 255),
+    b: Math.round(b * 255)
+  };
+}
+
+// Hex to HSL conversion helper
+function hexToHsl(hex) {
+  let r = parseInt(hex.slice(1, 3), 16) / 255;
+  let g = parseInt(hex.slice(3, 5), 16) / 255;
+  let b = parseInt(hex.slice(5, 7), 16) / 255;
+  
+  let max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  
+  if (max === min) {
+    h = s = 0;
+  } else {
+    let d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return {
+    h: Math.round(h * 360),
+    s: Math.round(s * 100),
+    l: Math.round(l * 100)
+  };
+}
+
+// RGB to Hex helper
+function rgbToHex(r, g, b) {
+  const toHex = (c) => {
+    const hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  };
+  return "#" + toHex(r) + toHex(g) + toHex(b);
+}
+
+// HSL to Hex helper
+function hslToHex(h, s, l) {
+  const rgb = hslToRgb(h, s, l);
+  return rgbToHex(rgb.r, rgb.g, rgb.b);
 }
 
 // Load
