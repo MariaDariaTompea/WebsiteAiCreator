@@ -4405,7 +4405,7 @@ function setupPaletteCreator() {
   
   // Canvas drawing loops
   function drawWheelAndHandles() {
-    drawColorWheel(canvas, brightness);
+    drawColorWheel(canvas);
     
     // Draw coordinates handle for all 4 slots
     const cx = canvas.width / 2;
@@ -4445,7 +4445,7 @@ function setupPaletteCreator() {
 }
 
 // Draw HSL color spectrum on wheel canvas
-function drawColorWheel(canvas, brightness) {
+function drawColorWheel(canvas) {
   const ctx = canvas.getContext('2d');
   const width = canvas.width;
   const height = canvas.height;
@@ -4469,7 +4469,8 @@ function drawColorWheel(canvas, brightness) {
         const hue = (angle * 180) / Math.PI;
         const saturation = (d / radius) * 100;
         
-        const rgb = hslToRgb(hue, saturation, brightness);
+        // Draw the wheel at a fixed 50% lightness so it is always a colorful spectrum
+        const rgb = hslToRgb(hue, saturation, 50);
         
         const index = (y * width + x) * 4;
         data[index] = rgb.r;
