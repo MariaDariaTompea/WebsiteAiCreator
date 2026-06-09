@@ -8,11 +8,12 @@ const TAGS_DICTIONARY = {
   ],
   style: [
     "Minimalist", "Cyberpunk", "Brutalist", "Retro/Vintage", "Neo-brutalism", 
-    "Glassmorphism", "Clean/Modern", "Playful", "Corporate", "Organic/Eco"
+    "Glassmorphism", "Clean/Modern", "Playful", "Corporate", "Organic/Eco",
+    "Gothic", "Romantic", "Official"
   ],
   mood: [
     "Dark/Mysterious", "Light/Airy", "Neon/Glow", "Warm/Cozy", "Professional", 
-    "Artistic", "Bold/Loud", "Tech/Futuristic", "Elegant", "Vibrant"
+    "Artistic", "Bold/Loud", "Tech/Futuristic", "Elegant", "Vibrant", "Sakura"
   ],
   layout: [
     "Feature-rich", "Image-centric", "Text-heavy", "Split-Screen", "Card-based", 
@@ -65,6 +66,38 @@ const THEME_PRESETS = {
     bg: "#050508",
     text: "#ffffff",
     font: "Share Tech Mono"
+  },
+  sakura: {
+    name: "Sakura Blossom",
+    primary: "#f472b6",
+    secondary: "#fbcfe8",
+    bg: "#0d0a0f",
+    text: "#fdf2f8",
+    font: "Playfair Display"
+  },
+  gothic: {
+    name: "Neo-Gothic",
+    primary: "#a78bfa",
+    secondary: "#ef4444",
+    bg: "#06020d",
+    text: "#f3e8ff",
+    font: "Cinzel"
+  },
+  romantic: {
+    name: "Crimson Romance",
+    primary: "#ec4899",
+    secondary: "#eab308",
+    bg: "#fdf4f5",
+    text: "#5c0624",
+    font: "Playfair Display"
+  },
+  official: {
+    name: "Official Trust",
+    primary: "#1e3a8a",
+    secondary: "#d97706",
+    bg: "#f8fafc",
+    text: "#0f172a",
+    font: "Montserrat"
   }
 };
 
@@ -564,6 +597,10 @@ function compilePrototypeCode() {
   const isRetroVibe = tagsArr.includes("Retro/Vintage");
   const isMinimalistVibe = tagsArr.includes("Minimalist");
   const isPlayfulVibe = tagsArr.includes("Playful") || tagsArr.includes("Kids");
+  const isGothicStyle = tagsArr.includes("Gothic");
+  const isRomanticStyle = tagsArr.includes("Romantic");
+  const isOfficialStyle = tagsArr.includes("Official");
+  const isSakuraMood = tagsArr.includes("Sakura");
   
   // Custom text templates matching industry/style
   const industry = tagsArr.find(t => TAGS_DICTIONARY.industry.includes(t)) || "Landing Page";
@@ -576,7 +613,91 @@ function compilePrototypeCode() {
   
   // Dynamic Content Synthesis based on industry + tags pairing
   if (industry === "Fitness") {
-    if (isArtisticVibe) {
+    if (isSakuraMood) {
+      headline = "Sakura Flow: Zen Somatics";
+      subheading = "Harmonize core energy under falling cherry blossom petals. Slow-motion kinetic flow and breath alignment.";
+      buttonText = "Book Zen Session";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">🌸</div>
+          <h3>Sakura Somatic Vinyasa</h3>
+          <p>Gentle flow sequences focused on joint mobility, spinal alignment, and releasing neural-muscular stress.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🧘</div>
+          <h3>Zen Breath Rings</h3>
+          <p>Mindfulness breathing, organic core posture support, and mental rest cycles designed for inner restoration.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🍵</div>
+          <h3>Herbal Recuperation</h3>
+          <p>Post-workout holistic recovery guides featuring organic green teas and botanical nutrition blends.</p>
+        </div>
+      `;
+    } else if (isGothicStyle) {
+      headline = "Vampire Strength: Crypt Conditioning";
+      subheading = "Unleash raw physical output in the shadows. High contrast gothic physical protocols for intense athletic load.";
+      buttonText = "Initialize Crypt Protocol";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">🦇</div>
+          <h3>Iron Crypt Lifting</h3>
+          <p>Heavy deadlifts and barbell strength modules executed in high-intensity atmospheric settings.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🩸</div>
+          <h3>Vascular Threshold Drills</h3>
+          <p>Extreme cardiovascular sprint routines designed to push anaerobic breathing boundaries.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🏰</div>
+          <h3>Fortress Core Resilience</h3>
+          <p>Static suspension training and bodyweight isometric routines to build unbreakable core lines.</p>
+        </div>
+      `;
+    } else if (isOfficialStyle) {
+      headline = "Municipal Athletic Training Center";
+      subheading = "Official athletic registry and municipal certification boards. Structured physical diagnostics for athletes.";
+      buttonText = "Register for Certification";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <h3>Official Fitness Diagnostics</h3>
+          <p>Standard cardiovascular stress tests, VO2 max metrics, and functional body index reports.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏛️</div>
+          <h3>Athletic Academy Syllabus</h3>
+          <p>Structured training cycles preparing junior and senior athletes for state competitions.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏅</div>
+          <h3>State Registry Schedules</h3>
+          <p>Access lists, exam times, and certified trainer registries approved by the Municipal Council.</p>
+        </div>
+      `;
+    } else if (isRomanticStyle) {
+      headline = "Duet Fitness: Partner Somatics";
+      subheading = "Build trust, core balance, and coordination together. Dual partner workouts designed for connection.";
+      buttonText = "Schedule Duet Class";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-img">💖</div>
+          <h3>Cooperative Partner Yoga</h3>
+          <p>Learn counterbalance and shared breathing scales, building flexibility and mental sync.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🤝</div>
+          <h3>Duet Resistance Training</h3>
+          <p>Partner-assisted stretches and dynamic loading setups to double training safety and engagement.</p>
+        </div>
+        <div class="card">
+          <div class="card-img">🍓</div>
+          <h3>Active Nutrition for Two</h3>
+          <p>Pre- and post-workout dining blueprints featuring organic smoothies and energy snacks.</p>
+        </div>
+      `;
+    } else if (isArtisticVibe) {
       headline = "Sculpting Kinetic Forms";
       subheading = "Movement is raw architecture. Experience an avant-garde fitness space bridging athletic power and classical art forms.";
       buttonText = "Enter the Studio";
@@ -821,7 +942,91 @@ function compilePrototypeCode() {
       `;
     }
   } else if (industry === "Agency") {
-    if (isArtisticVibe) {
+    if (isSakuraMood) {
+      headline = "Komorebi Visual Atelier";
+      subheading = "Crafting delicate watercolor brand systems, floral print identities, and elegant editorial web layouts.";
+      buttonText = "View Floral Portfolios";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🌸</div>
+          <h3>Botanical Identity</h3>
+          <p>Designing soft pastel brand systems, watercolor graphics, and botanical typography schemes.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎋</div>
+          <h3>Zen Interactive Grids</h3>
+          <p>Structuring clean, minimalist layouts that incorporate smooth flowing petal scroll animations.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📜</div>
+          <h3>Washi Editorial</h3>
+          <p>High-end typography and editorial publication styling mirroring raw paper textures and calligraphy.</p>
+        </div>
+      `;
+    } else if (isGothicStyle) {
+      headline = "Nocturnal Design Laboratory";
+      subheading = "Drama-driven identity pipelines, neo-gothic lettering, and high-contrast digital architectures.";
+      buttonText = "Enter the Lab";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🕸️</div>
+          <h3>Neo-Gothic Lettering</h3>
+          <p>Formulating dramatic typography scales, sharp calligraphic letterforms, and high-impact layouts.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗝️</div>
+          <h3>Monochrome Brand Crypts</h3>
+          <p>Architecting secure server clusters and encrypted web platforms with dark, elegant UI overlays.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🥀</div>
+          <h3>Atmospheric Campaigns</h3>
+          <p>Curating high-contrast visual campaigns utilizing dramatic shadows, smoke, and gothic textures.</p>
+        </div>
+      `;
+    } else if (isOfficialStyle) {
+      headline = "Public Communications Bureau";
+      subheading = "Providing certified public policy design, institutional systems, and accessible digital grids.";
+      buttonText = "Inquire About Services";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🏛️</div>
+          <h3>Institutional Portals</h3>
+          <p>Structuring highly accessible, clean state systems complying with national Web Guidelines.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚖️</div>
+          <h3>Certified Registry Databases</h3>
+          <p>Designing secure public records databases, searchable tables, and data telemetry dashboards.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h3>Security & Compliance</h3>
+          <p>Implementing certified network firewalls, encryptions, and clear user privacy pathways.</p>
+        </div>
+      `;
+    } else if (isRomanticStyle) {
+      headline = "Amour Brand Atelier";
+      subheading = "Visualizing delicate brand identities, romantic stationery, and cursive editorial narratives.";
+      buttonText = "Explore Visual Gallery";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">💌</div>
+          <h3>Stationery & Print Design</h3>
+          <p>Crafting bespoke luxury wedding cards, gold-foiled envelopes, and calligraphy monogram layouts.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌹</div>
+          <h3>Ethereal Web Spaces</h3>
+          <p>Structuring elegant landing pages utilizing pastel cream layers and cursive typography scales.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📖</div>
+          <h3>Editorial Love Journals</h3>
+          <p>Designing beautiful digital publication grids with soft margins and emotional copy styling.</p>
+        </div>
+      `;
+    } else if (isArtisticVibe) {
       headline = "The Narrative Lab";
       subheading = "We synthesize custom brands, digital spaces, and visual architectures for progressive organizations.";
       buttonText = "Start Project";
@@ -992,7 +1197,91 @@ function compilePrototypeCode() {
       `;
     }
   } else if (industry === "Education") {
-    if (isPlayfulVibe) {
+    if (isSakuraMood) {
+      headline = "Komorebi Zen Academy";
+      subheading = "Acquire mindful insights in physical and digital styling under drifting cherry blossom petals. A sanctuary for classical arts.";
+      buttonText = "Begin Zen Journey";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🖌️</div>
+          <h3>Sakura Calligraphy</h3>
+          <p>Learn brush-handling, ink flow, and the quiet architecture of kanji characters.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎋</div>
+          <h3>Garden Architecture</h3>
+          <p>Study spatial design rules, garden flow coordinates, and somatic meditation pathways.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌸</div>
+          <h3>Botanical Botany</h3>
+          <p>Discover organic remedies, seasonal blossom cycles, and the historical taxonomy of floral essences.</p>
+        </div>
+      `;
+    } else if (isGothicStyle) {
+      headline = "Nocturnum Academia";
+      subheading = "Step into dark academia. Investigate gothic architectural engineering, historical theology, and medieval archives.";
+      buttonText = "Enter the Archives";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🏰</div>
+          <h3>Gothic Architecture</h3>
+          <p>Decode the geometric secrets of medieval vaults, flying buttresses, and stone arches.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🗝️</div>
+          <h3>Medieval Epigraphy</h3>
+          <p>Examine ancient parchment archives, cryptography, and classic blackletter gothic calligraphy.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💀</div>
+          <h3>Shadow Anatomy</h3>
+          <p>Uncover organic mechanics, physical limitations, and historical medical journals.</p>
+        </div>
+      `;
+    } else if (isOfficialStyle) {
+      headline = "State Board of Education";
+      subheading = "Official public education catalog. Access national curriculum guidelines, verified credentials, and institutional syllabus grids.";
+      buttonText = "View State Curriculum";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">📋</div>
+          <h3>Approved Curriculums</h3>
+          <p>Verified academic schedules, learning outcomes, and state examination guidelines.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏛️</div>
+          <h3>Professional Registry</h3>
+          <p>Official database of certified teachers, credentials, and institutional resources.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔒</div>
+          <h3>Safety Protocols</h3>
+          <p>Standard compliance codes, network security training, and administrative procedures.</p>
+        </div>
+      `;
+    } else if (isRomanticStyle) {
+      headline = "Amour Academy of Letters";
+      subheading = "Discover the emotional weight of classical verse, copperplate composition, and romantic era storytelling methods.";
+      buttonText = "Explore Romantic Arts";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">💌</div>
+          <h3>Romantic Poetry</h3>
+          <p>Deep studies of 19th-century love sonnets, rhythmic structure, and epistolary literature.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">✒️</div>
+          <h3>Copperplate Calligraphy</h3>
+          <p>Master flowing script loops, steel nib ink handling, and decorative monogram illumination.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌹</div>
+          <h3>Aesthetic Design</h3>
+          <p>Designing beautiful, emotionally resonant digital publication layouts and margins.</p>
+        </div>
+      `;
+    } else if (isPlayfulVibe) {
       headline = "Cosmic Academy";
       subheading = "Fun, gamified learning paths exploring physics, scripting, and interactive design for young creators.";
       buttonText = "Start Learning";
@@ -1036,7 +1325,91 @@ function compilePrototypeCode() {
       `;
     }
   } else if (industry === "Mobile App") {
-    if (isCyberpunkVibe) {
+    if (isSakuraMood) {
+      headline = "Hana: Zen Breathing Tracker";
+      subheading = "Restore mental peace and somatic focus. Tracks conscious inhalation sync guided by floating sakura blossom widgets.";
+      buttonText = "Install Hana Widget";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🌸</div>
+          <h3>Petal Breathing</h3>
+          <p>Follow the slow contraction and release loops of cherry blossom petals to calm the autonomic system.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🍵</div>
+          <h3>Botanical Tea Log</h3>
+          <p>Log organic tea infusions, hydration indices, and restorative botanical nutrition routines.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎋</div>
+          <h3>Mindful Widget</h3>
+          <p>Display dynamic zen background panels on your mobile device home screen to stay grounded.</p>
+        </div>
+      `;
+    } else if (isGothicStyle) {
+      headline = "Crypta: Dark Journal & Alarm";
+      subheading = "A dark academia planner and scheduling tool. Document your nocturnal writings and organize tasks in the shadows.";
+      buttonText = "Download Crypta App";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🗝️</div>
+          <h3>Midnight Log</h3>
+          <p>Journal under soft candle aesthetics, track sleep cycles, and record dream symbols.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🦇</div>
+          <h3>Cinder Alarm</h3>
+          <p>Rise to heavy organ notes, gothic bells, and subtle low-frequency atmospheric soundscapes.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏰</div>
+          <h3>Shadow Tasks</h3>
+          <p>Structure daily athletic deadlift weights, study hours, and vault archives.</p>
+        </div>
+      `;
+    } else if (isOfficialStyle) {
+      headline = "MuniLink: City Portal";
+      subheading = "Official municipal utility app. Access public transit schedules, certified state credentials, and city council directories.";
+      buttonText = "Authenticate Citizen App";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">🎫</div>
+          <h3>Transit Passports</h3>
+          <p>Secure certified QR codes for municipal trains, subways, and public toll structures.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🏛️</div>
+          <h3>Digital Registry</h3>
+          <p>Access your tax credentials, voter IDs, and municipal registration indexes.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔔</div>
+          <h3>Verified Alerts</h3>
+          <p>Get direct notifications from the state council, weather services, and highway authority.</p>
+        </div>
+      `;
+    } else if (isRomanticStyle) {
+      headline = "Amour: Shared Poetry Diary";
+      subheading = "A private, cooperative diary for partners. Exchange love letters, coordinate milestones, and log memories together.";
+      buttonText = "Download Amour Diary";
+      cardsHtml = `
+        <div class="card">
+          <div class="card-icon">💌</div>
+          <h3>Letter Box</h3>
+          <p>Share hand-scripted letters, calligraphy drawings, and custom digital envelopes.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">💖</div>
+          <h3>Heart Milestones</h3>
+          <p>Create shared countdown timers for anniversaries, travels, and quiet dinners.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌹</div>
+          <h3>Memory Album</h3>
+          <p>Archive photographs, audio recordings, and sentimental poetry notes.</p>
+        </div>
+      `;
+    } else if (isCyberpunkVibe) {
       headline = "Synapse Mobile OS";
       subheading = "A secure, biometric mobile operating layout built for high-tech communication and subnets.";
       buttonText = "Link Device";
@@ -1143,7 +1516,211 @@ function compilePrototypeCode() {
       --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   `;
   
-  if (isCyberpunkVibe) {
+  if (isSakuraMood) {
+    rootVariables = `
+      --bg: ${c.bg};
+      --text: ${c.text};
+      --text-muted: ${isDarkColor(c.bg) ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"};
+      --primary: ${c.primary};
+      --secondary: ${c.secondary};
+      --card-bg: ${isDarkColor(c.bg) ? "rgba(244,114,182,0.08)" : "rgba(244,114,182,0.04)"};
+      --border: ${c.primary}40;
+      --font: 'Playfair Display', serif;
+      --radius: 12px;
+      --border-width: 1px;
+      --border-style: solid;
+      --shadow: 0 8px 25px rgba(244, 114, 182, 0.1);
+    `;
+    
+    dynamicVibeCss = `
+      body {
+        position: relative;
+        background-image: radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.05) 0%, transparent 40%),
+                          radial-gradient(circle at 90% 80%, rgba(251, 207, 232, 0.05) 0%, transparent 40%);
+      }
+      h1, h2, h3 {
+        font-family: 'Playfair Display', serif !important;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .card {
+        border-radius: var(--radius);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
+      }
+      .card:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 12px 30px rgba(244, 114, 182, 0.2) !important;
+        border-color: var(--primary) !important;
+      }
+      .btn-primary {
+        border-radius: 30px !important;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(244, 114, 182, 0.3) !important;
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 114, 182, 0.5) !important;
+      }
+    `;
+  } else if (isGothicStyle) {
+    rootVariables = `
+      --bg: ${c.bg};
+      --text: ${c.text};
+      --text-muted: rgba(243, 232, 255, 0.5);
+      --primary: ${c.primary};
+      --secondary: ${c.secondary};
+      --card-bg: ${isDarkColor(c.bg) ? "rgba(10,5,20,0.8)" : "rgba(243,232,255,0.8)"};
+      --border: var(--primary);
+      --font: 'Cinzel', serif;
+      --radius: 0px;
+      --border-width: 2px;
+      --border-style: double;
+      --shadow: 0 0 15px rgba(167, 139, 250, 0.2);
+    `;
+    
+    dynamicVibeCss = `
+      body {
+        position: relative;
+        background-image: radial-gradient(circle at 50% 30%, rgba(167, 139, 250, 0.05) 0%, transparent 60%);
+      }
+      h1, h2, h3 {
+        font-family: 'Cinzel', serif !important;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-weight: 700;
+        text-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
+      }
+      .card {
+        border: var(--border-width) var(--border-style) var(--border) !important;
+        transition: all 0.3s ease;
+      }
+      .card:hover {
+        transform: scale(1.02) !important;
+        box-shadow: 0 0 25px var(--secondary)30 !important;
+        border-color: var(--secondary) !important;
+      }
+      .btn-primary {
+        border-radius: 0px !important;
+        border: 2px solid var(--primary) !important;
+        background: transparent !important;
+        color: var(--text) !important;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-family: 'Cinzel', serif;
+        box-shadow: 0 0 8px var(--primary)60;
+        transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+        background: var(--primary) !important;
+        color: #000 !important;
+        box-shadow: 0 0 20px var(--primary);
+        transform: scale(1.05);
+      }
+    `;
+  } else if (isRomanticStyle) {
+    rootVariables = `
+      --bg: ${c.bg};
+      --text: ${c.text};
+      --text-muted: ${isDarkColor(c.bg) ? "rgba(253,244,245,0.6)" : "rgba(92,6,36,0.6)"};
+      --primary: ${c.primary};
+      --secondary: ${c.secondary};
+      --card-bg: ${isDarkColor(c.bg) ? "rgba(236,72,153,0.08)" : "#fffcfc"};
+      --border: ${c.primary}50;
+      --font: 'Playfair Display', serif;
+      --radius: 20px 4px 20px 4px;
+      --border-width: 3px;
+      --border-style: double;
+      --shadow: 0 10px 25px rgba(236, 72, 153, 0.08);
+    `;
+    
+    dynamicVibeCss = `
+      body {
+        position: relative;
+        background-image: radial-gradient(circle at 0% 0%, rgba(236,72,153,0.03) 0%, transparent 50%),
+                          radial-gradient(circle at 100% 100%, rgba(234,179,8,0.03) 0%, transparent 50%);
+      }
+      h1, h2, h3 {
+        font-family: 'Playfair Display', serif !important;
+        font-style: italic;
+        color: var(--text);
+      }
+      .card {
+        border: var(--border-width) var(--border-style) var(--border) !important;
+        border-radius: var(--radius);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
+      }
+      .card:hover {
+        transform: translateY(-6px) rotate(0.5deg) !important;
+        box-shadow: 0 15px 35px rgba(236, 72, 153, 0.15) !important;
+        border-color: var(--primary) !important;
+      }
+      .btn-primary {
+        border-radius: 25px !important;
+        background: var(--primary) !important;
+        color: #fff !important;
+        border: 2px double var(--secondary) !important;
+        box-shadow: 0 4px 10px rgba(236, 72, 153, 0.2);
+        transition: all 0.3s;
+      }
+      .btn-primary:hover {
+        background: var(--secondary) !important;
+        color: var(--text) !important;
+        transform: translateY(-2px);
+      }
+    `;
+  } else if (isOfficialStyle) {
+    rootVariables = `
+      --bg: ${c.bg};
+      --text: ${c.text};
+      --text-muted: ${isDarkColor(c.bg) ? "rgba(255,255,255,0.6)" : "rgba(15,23,42,0.6)"};
+      --primary: ${c.primary};
+      --secondary: ${c.secondary};
+      --card-bg: ${isDarkColor(c.bg) ? "rgba(255,255,255,0.03)" : "#ffffff"};
+      --border: ${isDarkColor(c.bg) ? "rgba(255,255,255,0.15)" : "#cbd5e1"};
+      --font: 'Montserrat', sans-serif;
+      --radius: 0px;
+      --border-width: 1px;
+      --border-style: solid;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+    `;
+    
+    dynamicVibeCss = `
+      h1, h2, h3 {
+        font-family: 'Montserrat', sans-serif !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .card {
+        border: var(--border-width) var(--border-style) var(--border) !important;
+        border-radius: 0px !important;
+        box-shadow: none !important;
+        transition: border-color 0.2s, background-color 0.2s;
+      }
+      .card:hover {
+        transform: none !important;
+        border-color: var(--primary) !important;
+        background-color: ${isDarkColor(c.bg) ? "rgba(255,255,255,0.05)" : "#f8fafc"} !important;
+      }
+      .btn-primary {
+        border-radius: 0px !important;
+        background: var(--primary) !important;
+        color: #fff !important;
+        border: 1px solid var(--primary) !important;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+      }
+      .btn-primary:hover {
+        background: ${isDarkColor(c.bg) ? "transparent" : "#fff"} !important;
+        color: var(--primary) !important;
+        border: 1px solid var(--primary) !important;
+      }
+    `;
+  } else if (isCyberpunkVibe) {
     rootVariables = `
       --bg: ${c.bg};
       --text: ${c.text};
@@ -1453,7 +2030,155 @@ function compilePrototypeCode() {
   
   // Compile vibe scripts to run client-side in the sandbox
   let vibeScript = "";
-  if (isArtisticVibe) {
+  if (isSakuraMood) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'sakura-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.85;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const petals = [];
+        for (let i = 0; i < 35; i++) {
+          petals.push({
+            x: Math.random() * width,
+            y: Math.random() * height - height,
+            r: Math.random() * 6 + 4,
+            d: Math.random() * 1.5 + 0.5,
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 2 - 1,
+            wobble: Math.random() * 2,
+            wobbleSpeed: Math.random() * 0.02 + 0.01
+          });
+        }
+        
+        function drawPetal(p) {
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rotation * Math.PI / 180);
+          
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.r * 1.5, p.r, 0, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(244, 114, 182, 0.45)";
+          ctx.fill();
+          
+          ctx.beginPath();
+          ctx.ellipse(-p.r * 0.2, 0, p.r * 0.8, p.r * 0.6, 0, 0, 2 * Math.PI);
+          ctx.fillStyle = "rgba(251, 207, 232, 0.6)";
+          ctx.fill();
+          
+          ctx.restore();
+        }
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          for (let i = 0; i < petals.length; i++) {
+            const p = petals[i];
+            p.y += p.d;
+            p.x += Math.sin(p.wobble) * 0.5;
+            p.wobble += p.wobbleSpeed;
+            p.rotation += p.rotationSpeed;
+            
+            if (p.y > height) {
+              p.y = -20;
+              p.x = Math.random() * width;
+            }
+            drawPetal(p);
+          }
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  } else if (isGothicStyle) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'gothic-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.65;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const sparks = [];
+        for (let i = 0; i < 40; i++) {
+          sparks.push({
+            x: Math.random() * width,
+            y: Math.random() * height + height,
+            r: Math.random() * 2 + 1,
+            s: Math.random() * 1.2 + 0.4,
+            alpha: Math.random() * 0.5 + 0.3,
+            wobble: Math.random() * 10
+          });
+        }
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          for (let i = 0; i < sparks.length; i++) {
+            const s = sparks[i];
+            s.y -= s.s;
+            s.x += Math.sin(s.wobble) * 0.2;
+            s.wobble += 0.02;
+            
+            if (s.y < -10) {
+              s.y = height + 10;
+              s.x = Math.random() * width;
+              s.alpha = Math.random() * 0.5 + 0.3;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+            ctx.fillStyle = "rgba(239, 68, 68, " + s.alpha + ")";
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "#ef4444";
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  } else if (isRomanticStyle) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('click', (e) => {
+          for (let i = 0; i < 6; i++) {
+            const h = document.createElement('div');
+            h.innerHTML = '❤️';
+            h.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; font-size:" + (Math.random() * 1.2 + 0.8) + "rem; pointer-events:none; z-index:9999; transition: all 1.2s cubic-bezier(0.1, 0.8, 0.3, 1); transform: translate(-50%, -50%); opacity: 1;";
+            document.body.appendChild(h);
+            
+            const dx = (Math.random() - 0.5) * 120;
+            const dy = -100 - Math.random() * 120;
+            const rot = (Math.random() - 0.5) * 45;
+            
+            requestAnimationFrame(() => {
+              h.style.transform = "translate(calc(-50% + " + dx + "px), calc(-50% + " + dy + "px)) scale(1.4) rotate(" + rot + "deg)";
+              h.style.opacity = "0";
+            });
+            setTimeout(() => h.remove(), 1200);
+          }
+        });
+      });
+    `;
+  } else if (isArtisticVibe) {
     vibeScript = `
       document.addEventListener('DOMContentLoaded', () => {
         const blob = document.createElement('div');
@@ -1683,7 +2408,7 @@ function compilePrototypeCode() {
 
   // Assemble CSS
   state.generatedCss = `
-    @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;600;700;800;900&family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@400;700&family=Pinyon+Script&display=swap');
     
     :root {
       ${rootVariables}
