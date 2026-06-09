@@ -1395,6 +1395,11 @@ function compilePrototypeCode() {
   // Compile vibe scripts to run client-side in the sandbox
   let vibeScript = "";
   if (isArtisticVibe) {
+    vibeScript = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const blob = document.createElement('div');
+        blob.style.cssText = "position:fixed; width:200px; height:200px; background:radial-gradient(circle, ${c.primary}15 0%, transparent 70%); pointer-events:none; z-index:9999; transform:translate(-50%, -50%); transition: left 0.1s ease-out, top 0.1s ease-out;";
+        document.body.appendChild(blob);
         document.addEventListener('mousemove', (e) => {
           blob.style.left = e.clientX + 'px';
           blob.style.top = e.clientY + 'px';
