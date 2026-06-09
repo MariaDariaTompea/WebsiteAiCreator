@@ -630,6 +630,15 @@ function compilePrototypeCode() {
     heroGradient: `linear-gradient(135deg, ${state.theme.primary} 0%, ${state.theme.secondary} 100%)`
   };
   
+  // Parse primary/secondary into RGB for dynamic mood styling
+  const _hexToRgb = (hex) => {
+    let h = hex.startsWith('#') ? hex.substring(1) : hex;
+    if (h.length === 3) h = h.split('').map(ch => ch + ch).join('');
+    return { r: parseInt(h.substring(0,2),16), g: parseInt(h.substring(2,4),16), b: parseInt(h.substring(4,6),16) };
+  };
+  const pRgb = _hexToRgb(c.primary);
+  const sRgb = _hexToRgb(c.secondary);
+  
   // Parse Vibe/Mood Tags
   const isArtisticVibe = tagsArr.includes("Artistic") || tagsArr.includes("Creative");
   const isCyberpunkVibe = tagsArr.includes("Cyberpunk") || tagsArr.includes("Neon/Glow") || tagsArr.includes("Tech/Futuristic");
@@ -1563,20 +1572,20 @@ function compilePrototypeCode() {
       --text-muted: ${isDarkColor(c.bg) ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"};
       --primary: ${c.primary};
       --secondary: ${c.secondary};
-      --card-bg: ${isDarkColor(c.bg) ? "rgba(244,114,182,0.08)" : "rgba(244,114,182,0.04)"};
+      --card-bg: ${isDarkColor(c.bg) ? `rgba(${pRgb.r},${pRgb.g},${pRgb.b},0.08)` : `rgba(${pRgb.r},${pRgb.g},${pRgb.b},0.04)`};
       --border: ${c.primary}40;
       --font: 'Playfair Display', serif;
       --radius: 12px;
       --border-width: 1px;
       --border-style: solid;
-      --shadow: 0 8px 25px rgba(244, 114, 182, 0.1);
+      --shadow: 0 8px 25px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.1);
     `;
     
     dynamicVibeCss = `
       body {
         position: relative;
-        background-image: radial-gradient(circle at 10% 20%, rgba(244, 114, 182, 0.05) 0%, transparent 40%),
-                          radial-gradient(circle at 90% 80%, rgba(251, 207, 232, 0.05) 0%, transparent 40%);
+        background-image: radial-gradient(circle at 10% 20%, rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.05) 0%, transparent 40%),
+                          radial-gradient(circle at 90% 80%, rgba(${sRgb.r}, ${sRgb.g}, ${sRgb.b}, 0.05) 0%, transparent 40%);
       }
       h1, h2, h3 {
         font-family: 'Playfair Display', serif !important;
@@ -1589,19 +1598,19 @@ function compilePrototypeCode() {
       }
       .card:hover {
         transform: translateY(-5px) !important;
-        box-shadow: 0 12px 30px rgba(244, 114, 182, 0.2) !important;
+        box-shadow: 0 12px 30px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.2) !important;
         border-color: var(--primary) !important;
       }
       .btn-primary {
         border-radius: 30px !important;
         background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
         border: none !important;
-        box-shadow: 0 4px 15px rgba(244, 114, 182, 0.3) !important;
+        box-shadow: 0 4px 15px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.3) !important;
         transition: transform 0.2s, box-shadow 0.2s;
       }
       .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 114, 182, 0.5) !important;
+        box-shadow: 0 6px 20px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.5) !important;
       }
     `;
   } else if (isGothicStyle) {
@@ -1617,20 +1626,20 @@ function compilePrototypeCode() {
       --radius: 0px;
       --border-width: 2px;
       --border-style: double;
-      --shadow: 0 0 15px rgba(167, 139, 250, 0.2);
+      --shadow: 0 0 15px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.2);
     `;
     
     dynamicVibeCss = `
       body {
         position: relative;
-        background-image: radial-gradient(circle at 50% 30%, rgba(167, 139, 250, 0.05) 0%, transparent 60%);
+        background-image: radial-gradient(circle at 50% 30%, rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.05) 0%, transparent 60%);
       }
       h1, h2, h3 {
         font-family: 'Cinzel', serif !important;
         letter-spacing: 2px;
         text-transform: uppercase;
         font-weight: 700;
-        text-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
+        text-shadow: 0 0 8px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.3);
       }
       .card {
         border: var(--border-width) var(--border-style) var(--border) !important;
@@ -1638,7 +1647,7 @@ function compilePrototypeCode() {
       }
       .card:hover {
         transform: scale(1.02) !important;
-        box-shadow: 0 0 25px var(--secondary)30 !important;
+        box-shadow: 0 0 25px rgba(${sRgb.r}, ${sRgb.g}, ${sRgb.b}, 0.19) !important;
         border-color: var(--secondary) !important;
       }
       .btn-primary {
@@ -1649,7 +1658,7 @@ function compilePrototypeCode() {
         text-transform: uppercase;
         letter-spacing: 2px;
         font-family: 'Cinzel', serif;
-        box-shadow: 0 0 8px var(--primary)60;
+        box-shadow: 0 0 8px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.38);
         transition: all 0.3s ease;
       }
       .btn-primary:hover {
@@ -1666,20 +1675,20 @@ function compilePrototypeCode() {
       --text-muted: ${isDarkColor(c.bg) ? "rgba(253,244,245,0.6)" : "rgba(92,6,36,0.6)"};
       --primary: ${c.primary};
       --secondary: ${c.secondary};
-      --card-bg: ${isDarkColor(c.bg) ? "rgba(236,72,153,0.08)" : "#fffcfc"};
+      --card-bg: ${isDarkColor(c.bg) ? `rgba(${pRgb.r},${pRgb.g},${pRgb.b},0.08)` : "#fffcfc"};
       --border: ${c.primary}50;
       --font: 'Playfair Display', serif;
       --radius: 20px 4px 20px 4px;
       --border-width: 3px;
       --border-style: double;
-      --shadow: 0 10px 25px rgba(236, 72, 153, 0.08);
+      --shadow: 0 10px 25px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.08);
     `;
     
     dynamicVibeCss = `
       body {
         position: relative;
-        background-image: radial-gradient(circle at 0% 0%, rgba(236,72,153,0.03) 0%, transparent 50%),
-                          radial-gradient(circle at 100% 100%, rgba(234,179,8,0.03) 0%, transparent 50%);
+        background-image: radial-gradient(circle at 0% 0%, rgba(${pRgb.r},${pRgb.g},${pRgb.b},0.03) 0%, transparent 50%),
+                          radial-gradient(circle at 100% 100%, rgba(${sRgb.r},${sRgb.g},${sRgb.b},0.03) 0%, transparent 50%);
       }
       h1, h2, h3 {
         font-family: 'Playfair Display', serif !important;
@@ -1693,7 +1702,7 @@ function compilePrototypeCode() {
       }
       .card:hover {
         transform: translateY(-6px) rotate(0.5deg) !important;
-        box-shadow: 0 15px 35px rgba(236, 72, 153, 0.15) !important;
+        box-shadow: 0 15px 35px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.15) !important;
         border-color: var(--primary) !important;
       }
       .btn-primary {
@@ -1701,7 +1710,7 @@ function compilePrototypeCode() {
         background: var(--primary) !important;
         color: #fff !important;
         border: 2px double var(--secondary) !important;
-        box-shadow: 0 4px 10px rgba(236, 72, 153, 0.2);
+        box-shadow: 0 4px 10px rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.2);
         transition: all 0.3s;
       }
       .btn-primary:hover {
