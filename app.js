@@ -98,7 +98,14 @@ const state = {
   mockupLoading: false,
   mockupUrl: "",
   generatedHtml: "",
-  generatedCss: ""
+  generatedCss: "",
+  
+  // New features state
+  menuLinks: ["Home", "Features", "Pricing", "Contact"],
+  enabledComponents: new Set(["hero", "features"]),
+  heroCustomButtons: [],
+  tableColumns: [],
+  navSticky: false
 };
 
 // DOM Elements
@@ -108,12 +115,25 @@ const fontSelectEl = document.getElementById("font-select");
 const fontPreviewEl = document.getElementById("font-preview");
 const generateBtnEl = document.getElementById("generate-btn");
 const tabBtnMockupEl = document.getElementById("tab-mockup");
+const tabBtnSketchEl = document.getElementById("tab-sketch");
 const tabBtnProtoEl = document.getElementById("tab-prototype");
 const tabBtnCodeEl = document.getElementById("tab-code");
 const viewportControlsEl = document.getElementById("viewport-controls");
 const studioBodyEl = document.getElementById("studio-body");
 const toastEl = document.getElementById("toast");
 const toastMessageEl = document.getElementById("toast-message");
+
+// Dynamic components DOM Selectors
+const menuItemsGridEl = document.getElementById("menu-items-grid");
+const customMenuInputEl = document.getElementById("custom-menu-input");
+const addMenuBtnEl = document.getElementById("add-menu-btn");
+
+const compHeroCheck = document.getElementById("comp-hero");
+const compFeaturesCheck = document.getElementById("comp-features");
+const compTableCheck = document.getElementById("comp-table");
+const compPricingCheck = document.getElementById("comp-pricing");
+const compFaqCheck = document.getElementById("comp-faq");
+const compFormCheck = document.getElementById("comp-form");
 
 // Picker Elements
 const primaryColorInput = document.getElementById("color-primary");
@@ -133,6 +153,7 @@ function init() {
   setupFonts();
   setupEventListeners();
   updateColorsInUI();
+  renderMenuLinks();
   updatePreviewPlaceholder();
 }
 
@@ -304,6 +325,7 @@ function setupEventListeners() {
   
   // Tabs events
   tabBtnMockupEl.addEventListener("click", () => switchTab("mockup"));
+  tabBtnSketchEl.addEventListener("click", () => switchTab("sketch"));
   tabBtnProtoEl.addEventListener("click", () => switchTab("prototype"));
   tabBtnCodeEl.addEventListener("click", () => switchTab("code"));
   
@@ -318,6 +340,91 @@ function setupEventListeners() {
   
   // CTA Generate
   generateBtnEl.addEventListener("click", generateWebsite);
+
+  // Dynamic Component Checklist Listeners
+  const checkboxMap = {
+    "hero": compHeroCheck,
+    "features": compFeaturesCheck,
+    "table": compTableCheck,
+    "pricing": compPricingCheck,
+    "faq": compFaqCheck,
+    "form": compFormCheck
+  };
+
+  Object.entries(checkboxMap).forEach(([compKey, el]) => {
+    el.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        state.enabledComponents.add(compKey);
+      } else {
+        state.enabledComponents.delete(compKey);
+      }
+      
+      // Auto recompile if there is an active prototype rendering
+      if (state.selectedTags.size > 0) {
+        compilePrototypeCode();
+        if (state.activeTab === "prototype" || state.activeTab === "code") {
+          renderActiveStudioTab();
+        }
+      }
+    });
+  });
+
+  // Custom Menu Buttons Listeners
+  addMenuBtnEl.addEventListener("click", addCustomMenuLink);
+  customMenuInputEl.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addCustomMenuLink();
+    }
+  });
+}
+
+// Render Menu Buttons grid in sidebar
+function renderMenuLinks() {
+  menuItemsGridEl.innerHTML = "";
+  state.menuLinks.forEach((link, idx) => {
+    const badge = document.createElement("div");
+    badge.className = "menu-item-badge";
+    badge.textContent = link;
+    badge.addEventListener("click", () => {
+      state.menuLinks.splice(idx, 1);
+      renderMenuLinks();
+      
+      // Auto recompile and refresh live layout
+      if (state.selectedTags.size > 0) {
+        compilePrototypeCode();
+        if (state.activeTab === "prototype" || state.activeTab === "code") {
+          renderActiveStudioTab();
+        }
+      }
+    });
+    menuItemsGridEl.appendChild(badge);
+  });
+}
+
+// Add a custom menu link
+function addCustomMenuLink() {
+  const val = customMenuInputEl.value.trim();
+  if (!val) return;
+  if (state.menuLinks.includes(val)) {
+    showToast("This menu link already exists!");
+    return;
+  }
+  if (state.menuLinks.length >= 8) {
+    showToast("Maximum of 8 menu buttons reached.");
+    return;
+  }
+  state.menuLinks.push(val);
+  customMenuInputEl.value = "";
+  renderMenuLinks();
+  showToast(`Added navigation menu button: ${val}`);
+  
+  // Auto recompile and refresh live layout
+  if (state.selectedTags.size > 0) {
+    compilePrototypeCode();
+    if (state.activeTab === "prototype" || state.activeTab === "code") {
+      renderActiveStudioTab();
+    }
+  }
 }
 
 function removePresetSelectionHighlight() {
@@ -336,11 +443,15 @@ function switchTab(tab) {
   state.activeTab = tab;
   
   tabBtnMockupEl.classList.remove("active");
+  tabBtnSketchEl.classList.remove("active");
   tabBtnProtoEl.classList.remove("active");
   tabBtnCodeEl.classList.remove("active");
   
   if (tab === "mockup") {
     tabBtnMockupEl.classList.add("active");
+    viewportControlsEl.style.display = "none";
+  } else if (tab === "sketch") {
+    tabBtnSketchEl.classList.add("active");
     viewportControlsEl.style.display = "none";
   } else if (tab === "prototype") {
     tabBtnProtoEl.classList.add("active");
@@ -686,7 +797,7 @@ function compilePrototypeCode() {
       `;
     } else {
       headline = "Lumina Essentials";
-      subheading = "A curated selection of modern design gadgets and home aesthetics built for sophisticated spaces.";
+      subheading = "A curated selection of modern gadgets and home aesthetics built for sophisticated spaces.";
       buttonText = "Shop Best Sellers";
       cardsHtml = `
         <div class="card">
@@ -1284,11 +1395,6 @@ function compilePrototypeCode() {
   // Compile vibe scripts to run client-side in the sandbox
   let vibeScript = "";
   if (isArtisticVibe) {
-    vibeScript = `
-      document.addEventListener('DOMContentLoaded', () => {
-        const blob = document.createElement('div');
-        blob.style.cssText = "position:fixed; width:450px; height:450px; background:radial-gradient(circle, var(--primary) 0%, transparent 70%); filter:blur(90px); opacity:0.18; pointer-events:none; z-index:-1; transition: transform 0.15s ease-out; transform:translate(-50%, -50%);";
-        document.body.appendChild(blob);
         document.addEventListener('mousemove', (e) => {
           blob.style.left = e.clientX + 'px';
           blob.style.top = e.clientY + 'px';
@@ -1358,6 +1464,159 @@ function compilePrototypeCode() {
     `;
   }
   
+  // Sticky Navbar configuration CSS
+  let stickyNavCss = "";
+  if (state.navSticky) {
+    stickyNavCss = `
+      .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: var(--bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid var(--border) !important;
+      }
+    `;
+  }
+
+  // Component Custom Vibe CSS overrides
+  let dynamicVibeComponentCss = "";
+  if (isCyberpunkVibe) {
+    dynamicVibeComponentCss = `
+      .table-scroll-container, .pricing-card, .faq-item, .contact-box {
+        border-radius: 0px !important;
+        border-color: var(--primary)80 !important;
+        box-shadow: 0 0 12px var(--primary)25 !important;
+      }
+      .pricing-card.featured {
+        border-color: var(--secondary) !important;
+        box-shadow: 0 0 20px var(--secondary)50 !important;
+      }
+      .data-table th {
+        color: var(--secondary) !important;
+        font-family: monospace;
+      }
+      .data-table td {
+        font-family: monospace;
+      }
+      .form-group input, .form-group textarea {
+        border-radius: 0px !important;
+        border-color: var(--border) !important;
+        font-family: monospace;
+      }
+      .form-group input:focus, .form-group textarea:focus {
+        border-color: var(--secondary) !important;
+        box-shadow: 0 0 15px var(--secondary)60 !important;
+      }
+    `;
+  } else if (isBrutalistVibe) {
+    dynamicVibeComponentCss = `
+      .table-scroll-container, .pricing-card, .faq-item, .contact-box {
+        border-radius: 0px !important;
+        border: 3px solid var(--text) !important;
+        box-shadow: 8px 8px 0px var(--text) !important;
+        background: var(--bg) !important;
+      }
+      .pricing-card.featured {
+        background: var(--primary)15 !important;
+        transform: translate(-4px, -4px) !important;
+        box-shadow: 12px 12px 0px var(--text) !important;
+      }
+      .data-table th {
+        background: var(--primary) !important;
+        color: white !important;
+        border-bottom: 3px solid var(--text) !important;
+      }
+      .data-table td {
+        border-bottom: 2px solid var(--text) !important;
+      }
+      .form-group input, .form-group textarea {
+        border-radius: 0px !important;
+        border: 3px solid var(--text) !important;
+        background: transparent !important;
+        color: var(--text) !important;
+      }
+      .form-group input:focus, .form-group textarea:focus {
+        background: var(--secondary)15 !important;
+      }
+    `;
+  } else if (isPlayfulVibe) {
+    dynamicVibeComponentCss = `
+      .table-scroll-container, .pricing-card, .faq-item, .contact-box {
+        border-radius: 28px !important;
+        border-color: var(--primary)40 !important;
+        box-shadow: 0 8px 0px var(--primary)10 !important;
+      }
+      .pricing-card.featured {
+        border-color: var(--secondary) !important;
+        box-shadow: 0 8px 0px var(--secondary)30 !important;
+      }
+      .form-group input, .form-group textarea {
+        border-radius: 18px !important;
+        border-color: var(--primary)40 !important;
+      }
+    `;
+  } else if (isMinimalistVibe) {
+    dynamicVibeComponentCss = `
+      .table-scroll-container, .pricing-card, .faq-item, .contact-box {
+        border-radius: 0px !important;
+        border: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+      .pricing-card {
+        padding: 2rem 0 !important;
+      }
+      .pricing-card.featured {
+        border-bottom: 2px solid var(--primary) !important;
+      }
+      .data-table th {
+        background: transparent !important;
+        border-bottom: 1px solid var(--text) !important;
+      }
+      .form-group input, .form-group textarea {
+        border-radius: 0px !important;
+        border: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        background: transparent !important;
+      }
+    `;
+  } else if (isRetroVibe) {
+    dynamicVibeComponentCss = `
+      .table-scroll-container, .pricing-card, .faq-item, .contact-box {
+        border-radius: 8px !important;
+        border: 2px dashed var(--primary) !important;
+      }
+      .pricing-card.featured {
+        border-style: solid !important;
+        background: rgba(0,0,0,0.15) !important;
+      }
+      .data-table th {
+        border-bottom: 2px dashed var(--primary) !important;
+      }
+      .form-group input, .form-group textarea {
+        border: 2px dashed var(--primary) !important;
+        border-radius: 8px !important;
+      }
+    `;
+  } else if (isArtisticVibe) {
+    dynamicVibeComponentCss = `
+      .table-scroll-container, .pricing-card, .faq-item, .contact-box {
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-radius: 40px 10px 40px 10px !important;
+        border: 1px solid var(--primary)30 !important;
+      }
+      .pricing-card.featured {
+        border-color: var(--primary) !important;
+        box-shadow: 0 10px 30px var(--primary)15 !important;
+      }
+    `;
+  }
+
   // Assemble CSS
   state.generatedCss = `
     @import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;600;700;800;900&display=swap');
@@ -1500,6 +1759,17 @@ function compilePrototypeCode() {
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
       filter: brightness(1.1);
     }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary);
+    }
     
     .btn-sm {
       padding: 0.5rem 1rem;
@@ -1511,13 +1781,25 @@ function compilePrototypeCode() {
     
     /* Grid Cards */
     .section {
-      padding: 4rem 0 6rem;
+      padding: 5rem 0;
+    }
+
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, var(--text) 60%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.01em;
     }
     
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
+      margin-top: 2.5rem;
     }
     
     .card {
@@ -1568,6 +1850,223 @@ function compilePrototypeCode() {
       color: var(--secondary);
       margin: 0.5rem 0 1rem;
     }
+
+    /* Table styling */
+    .table-scroll-container {
+      width: 100%;
+      overflow-x: auto;
+      border: var(--border-width) var(--border-style) var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin: 2.5rem 0;
+      background: var(--card-bg);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      min-width: 600px;
+    }
+    .data-table th {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 1.15rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--primary);
+      border-bottom: var(--border-width) var(--border-style) var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .data-table td {
+      padding: 1.15rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      transition: background 0.2s;
+    }
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.015);
+      color: var(--text);
+    }
+    
+    /* Pricing Matrix */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 2.5rem;
+    }
+    .pricing-card {
+      background: var(--card-bg);
+      border: var(--border-width) var(--border-style) var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s;
+    }
+    .pricing-card.featured {
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.15);
+      transform: translateY(-5px);
+    }
+    .badge-featured {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+    }
+    .pricing-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .price-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      min-height: 42px;
+    }
+    .price-val {
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: baseline;
+    }
+    .price-amt {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .price-period {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-left: 0.25rem;
+    }
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 2.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .pricing-features li {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pricing-card .btn {
+      width: 100%;
+      text-align: center;
+    }
+    
+    /* FAQ Accordion */
+    .faq-accordion {
+      max-width: 800px;
+      margin: 2.5rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .faq-item {
+      background: var(--card-bg);
+      border: var(--border-width) var(--border-style) var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+    .faq-question {
+      width: 100%;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      font-family: var(--font);
+    }
+    .faq-question:hover {
+      color: var(--primary);
+    }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0 1.5rem;
+    }
+    .faq-item.active {
+      border-color: var(--primary);
+    }
+    .faq-item.active .faq-answer {
+      max-height: 200px;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .faq-icon {
+      font-size: 1.5rem;
+      color: var(--primary);
+      transition: transform 0.2s;
+      display: inline-block;
+      line-height: 1;
+    }
+    
+    /* Contact Box */
+    .contact-box {
+      max-width: 600px;
+      margin: 2.5rem auto 0;
+      background: var(--card-bg);
+      border: var(--border-width) var(--border-style) var(--border);
+      border-radius: var(--radius);
+      padding: 3rem 2.5rem;
+      box-shadow: var(--shadow);
+    }
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-group label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-group input, .form-group textarea {
+      background: rgba(0,0,0,0.15);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.1);
+    }
     
     /* Footer */
     .footer {
@@ -1578,9 +2077,320 @@ function compilePrototypeCode() {
       font-size: 0.9rem;
     }
     
+    ${stickyNavCss}
     ${dynamicVibeCss}
+    ${dynamicVibeComponentCss}
   `;
   
+  // Assemble HTML dynamically based on state
+  let compiledSectionsHtml = "";
+
+  // 1. Navigation Menu List HTML
+  const navLinks = state.menuLinks.map(link => `<li><a href="#${link.toLowerCase().replace(/\s+/g, '-')}">${link}</a></li>`).join("\n        ");
+  
+  compiledSectionsHtml += `
+    <nav class="navbar">
+      <div class="brand">
+        <div class="brand-dot"></div>
+        <span>${industry.replace(/\s+/g, "")}</span>
+      </div>
+      <ul class="nav-links">
+        ${navLinks}
+      </ul>
+    </nav>
+  `;
+
+  // 2. Hero Section
+  if (state.enabledComponents.has("hero")) {
+    let customHeroBtnsHtml = "";
+    if (state.heroCustomButtons && state.heroCustomButtons.length > 0) {
+      customHeroBtnsHtml = state.heroCustomButtons.map(btn => `
+        <button class="btn btn-secondary">${btn}</button>
+      `).join("");
+    }
+
+    compiledSectionsHtml += `
+    <header class="hero" id="home">
+      <div class="hero-glow"></div>
+      <div class="hero-content">
+        <h1>${headline}</h1>
+        <p>${subheading}</p>
+        <div class="hero-actions" style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; align-items: center;">
+          <button class="btn btn-primary">${buttonText}</button>
+          ${customHeroBtnsHtml}
+        </div>
+        ${isCyberpunkVibe ? `
+        <div id="cyber-console" style="margin-top: 2.5rem; font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.5); border: 2px solid var(--primary); padding: 1rem; border-radius: 0; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; max-height: 120px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+          <div style="color: var(--secondary); margin-bottom: 0.5rem; font-weight: bold; font-family: monospace;">[LINKED TELEMETRY NODE DATA - ACTIVE]</div>
+          <div id="logs-body"></div>
+        </div>
+        ` : ''}
+      </div>
+    </header>
+    `;
+  }
+
+  // 3. Feature Cards
+  if (state.enabledComponents.has("features")) {
+    compiledSectionsHtml += `
+    <section class="section" id="features">
+      <h2 class="section-title">Core Features</h2>
+      <div class="grid">
+        ${cardsHtml}
+      </div>
+    </section>
+    `;
+  }
+
+  // 4. Scrollable Data Table
+  if (state.enabledComponents.has("table")) {
+    let tableHeaders = state.tableColumns;
+    if (!tableHeaders || tableHeaders.length === 0) {
+      if (industry === "Fitness") {
+        tableHeaders = ["Class Name", "Instructor", "Time", "Intensity"];
+      } else if (industry === "Restaurant") {
+        tableHeaders = ["Dish Name", "Category", "Preparation", "Price"];
+      } else if (industry === "Portfolio") {
+        tableHeaders = ["Project Name", "Role", "Tech Stack", "Status"];
+      } else if (industry === "E-Commerce") {
+        tableHeaders = ["Product Model", "SKU", "Stock", "Base Price"];
+      } else {
+        tableHeaders = ["Service Node", "Location", "CPU Load", "Latency"];
+      }
+    }
+
+    let tableRows = [];
+    if (industry === "Fitness") {
+      tableRows = [
+        ["Power Yoga Focus", "Sarah Jenkins", "08:00 AM", "Medium"],
+        ["HIIT Conditioning", "Marcus Vance", "10:30 AM", "High"],
+        ["Barbell Strength", "Elena Rostova", "04:00 PM", "High"],
+        ["Somatic Stretch", "Kaito Sato", "06:30 PM", "Low"],
+        ["Cardio Blast", "Aisha Diallo", "07:30 PM", "Medium"]
+      ];
+    } else if (industry === "Restaurant") {
+      tableRows = [
+        ["Truffle Pasta", "Mains", "15 mins", "$28.00"],
+        ["Basalt Beef Ribeye", "Grill", "25 mins", "$42.00"],
+        ["Deconstructed Soufflé", "Desserts", "20 mins", "$16.00"],
+        ["Heirloom Salad", "Starters", "10 mins", "$14.00"],
+        ["Spicy Tuna Crudo", "Starters", "12 mins", "$22.00"]
+      ];
+    } else if (industry === "Portfolio") {
+      tableRows = [
+        ["Aura Interactive", "Lead Designer", "WebGL, Three.js", "Live"],
+        ["Zen Brand Identity", "Art Director", "Illustrator, Print", "Archive"],
+        ["Cypher Web Shell", "Systems Dev", "Docker, Node, Go", "Beta"],
+        ["Volta Mobile App", "Product Designer", "React Native", "Live"],
+        ["Metrics Dashboard", "UI Engineer", "D3.js, HTML5", "Internal"]
+      ];
+    } else if (industry === "E-Commerce") {
+      tableRows = [
+        ["Acoustic Pro Headset", "AC-PRO-09", "In Stock", "$320.00"],
+        ["Chrono Smartwatch", "CH-SM-88", "Low Stock", "$210.00"],
+        ["Orbital Desk Lamp", "ORB-DL-41", "In Stock", "$85.00"],
+        ["Raw Runner 01", "RAW-R-01", "Out of Stock", "$180.00"],
+        ["Modular Utility Pack", "MOD-UP-33", "In Stock", "$150.00"]
+      ];
+    } else {
+      tableRows = [
+        ["Quantum Core A", "US-East", "42%", "0.08ms"],
+        ["Quantum Core B", "EU-Central", "88%", "0.12ms"],
+        ["Edge Node 109", "AP-South", "12%", "0.24ms"],
+        ["Cipher Guard 1", "Global Proxy", "31%", "0.15ms"],
+        ["Auto-Agent Hub", "US-West", "55%", "0.09ms"]
+      ];
+    }
+
+    let headersHtml = tableHeaders.map(h => `<th>${h}</th>`).join("");
+    let rowsHtml = tableRows.map(row => {
+      let cols = "";
+      for (let i = 0; i < tableHeaders.length; i++) {
+        let val = row[i % row.length] || "-";
+        cols += `<td>${val}</td>`;
+      }
+      return `<tr>${cols}</tr>`;
+    }).join("\n          ");
+
+    compiledSectionsHtml += `
+    <section class="section" id="table">
+      <h2 class="section-title">Operational Telemetry</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 0.95rem;">Real-time metrics and tabular index data (scrollable grid)</p>
+      <div class="table-scroll-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              ${headersHtml}
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    `;
+  }
+
+  // 5. Pricing Matrix
+  if (state.enabledComponents.has("pricing")) {
+    let pricingCardsHtml = `
+      <div class="pricing-card">
+        <h3>Starter</h3>
+        <p class="price-desc">For individuals exploring core features.</p>
+        <div class="price-val">
+          <span class="price-amt">$19</span>
+          <span class="price-period">/mo</span>
+        </div>
+        <ul class="pricing-features">
+          <li>✓ Basic Analytics</li>
+          <li>✓ Single Workspace</li>
+          <li>✓ Standard Speed</li>
+          <li>✓ Email Support</li>
+        </ul>
+        <button class="btn btn-secondary">Select Starter</button>
+      </div>
+      <div class="pricing-card featured">
+        <div class="badge-featured">Popular</div>
+        <h3>Professional</h3>
+        <p class="price-desc">Perfect for teams and production apps.</p>
+        <div class="price-val">
+          <span class="price-amt">$49</span>
+          <span class="price-period">/mo</span>
+        </div>
+        <ul class="pricing-features">
+          <li>✓ Full Telemetry Suite</li>
+          <li>✓ 5 Workspaces</li>
+          <li>✓ 0.1ms Server Responses</li>
+          <li>✓ 24/7 Priority Support</li>
+          <li>✓ AI Agent Core Access</li>
+        </ul>
+        <button class="btn btn-primary">Select Pro</button>
+      </div>
+      <div class="pricing-card">
+        <h3>Enterprise</h3>
+        <p class="price-desc">Full infrastructure load capacity.</p>
+        <div class="price-val">
+          <span class="price-amt">$99</span>
+          <span class="price-period">/mo</span>
+        </div>
+        <ul class="pricing-features">
+          <li>✓ Unlimited Subnets</li>
+          <li>✓ Dedicated Clustering</li>
+          <li>✓ Zero-Latency Routing</li>
+          <li>✓ Custom SLA Support</li>
+        </ul>
+        <button class="btn btn-secondary">Select Enterprise</button>
+      </div>
+    `;
+
+    compiledSectionsHtml += `
+    <section class="section" id="pricing">
+      <h2 class="section-title">Flexible Pricing Plan</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 0.95rem;">Pick a tier that aligns with your scale and requirements.</p>
+      <div class="pricing-grid">
+        ${pricingCardsHtml}
+      </div>
+    </section>
+    `;
+  }
+
+  // 6. FAQ Accordion
+  if (state.enabledComponents.has("faq")) {
+    compiledSectionsHtml += `
+    <section class="section" id="faq">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p style="text-align: center; color: var(--text-muted); margin-bottom: 2.5rem; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 0.95rem;">Quick answers to common questions about our dynamic setups.</p>
+      <div class="faq-accordion">
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How does the AI layout model process keywords?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>The layout model reads selected semantic tags, parses their contextual meanings, and pairs them to write custom headlines, copy descriptions, and load style variables suited for your specific industry.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Can I export the compiled prototype source code?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes, you can click the 'Source Code' tab, copy the entire compiled code blocks including standard styling overrides and scripts, and run it locally with zero dependencies.</p>
+          </div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How can I add scrollable tables and customized menus?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">
+            <p>Use the 'Layout Sketch' planner tab or sidebar customizers to add/remove links and toggle tables. The prototype compiler handles rendering instantly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    `;
+  }
+
+  // 7. Contact Form
+  if (state.enabledComponents.has("form")) {
+    compiledSectionsHtml += `
+    <section class="section" id="contact">
+      <div class="contact-box">
+        <h2 class="section-title" style="margin-bottom: 1rem;">Get In Touch</h2>
+        <p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem;">Drop a message to initiate collaboration or inquire about services.</p>
+        <form class="contact-form" onsubmit="event.preventDefault(); alert('Inquiry sent successfully!');">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="john@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Message Content</label>
+            <textarea rows="4" placeholder="How can we cooperate?" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+        </form>
+      </div>
+    </section>
+    `;
+  }
+
+  // 8. Footer (Always compiled)
+  compiledSectionsHtml += `
+    <footer class="footer">
+      <p>&copy; ${new Date().getFullYear()} ${industry}. Generated by WebCraft AI.</p>
+    </footer>
+  `;
+
+  let compiledScripts = "";
+  compiledScripts += `
+    // FAQ Toggle Handler
+    document.addEventListener('DOMContentLoaded', () => {
+      const questions = document.querySelectorAll('.faq-question');
+      questions.forEach(q => {
+        q.addEventListener('click', () => {
+          const item = q.parentElement;
+          const isActive = item.classList.contains('active');
+          
+          document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+          
+          if (!isActive) {
+            item.classList.add('active');
+          }
+        });
+      });
+    });
+  `;
+  if (vibeScript) {
+    compiledScripts += "\n" + vibeScript;
+  }
+
   // Assemble HTML
   state.generatedHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -1594,45 +2404,9 @@ function compilePrototypeCode() {
 </head>
 <body>
   <div class="container">
-    <nav class="navbar">
-      <div class="brand">
-        <div class="brand-dot"></div>
-        <span>${industry.replace(" ", "")}</span>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Features</a></li>
-        <li><a href="#">Pricing</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-    </nav>
-    
-    <header class="hero">
-      <div class="hero-glow"></div>
-      <div class="hero-content">
-        <h1>${headline}</h1>
-        <p>${subheading}</p>
-        <button class="btn btn-primary">${buttonText}</button>
-        ${isCyberpunkVibe ? `
-        <div id="cyber-console" style="margin-top: 2.5rem; font-family: monospace; font-size: 0.8rem; background: rgba(0,0,0,0.5); border: 2px solid var(--primary); padding: 1rem; border-radius: 0; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto; max-height: 120px; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
-          <div style="color: var(--secondary); margin-bottom: 0.5rem; font-weight: bold; font-family: monospace;">[LINKED TELEMETRY NODE DATA - ACTIVE]</div>
-          <div id="logs-body"></div>
-        </div>
-        ` : ''}
-      </div>
-    </header>
-    
-    <section class="section">
-      <div class="grid">
-        ${cardsHtml}
-      </div>
-    </section>
-    
-    <footer class="footer">
-      <p>&copy; ${new Date().getFullYear()} ${industry}. Generated by WebCraft AI.</p>
-    </footer>
+    ${compiledSectionsHtml}
   </div>
-  ${vibeScript ? `<script>${vibeScript}</script>` : ''}
+  ${compiledScripts ? `<script>${compiledScripts}</script>` : ''}
 </body>
 </html>`;
 }
@@ -1788,6 +2562,8 @@ function renderActiveStudioTab() {
         .then(() => showToast("Copied full HTML/CSS prototype to clipboard!"))
         .catch(() => showToast("Failed to copy code."));
     });
+  } else if (state.activeTab === "sketch") {
+    renderLayoutBlueprintSketch();
   }
 }
 
@@ -1800,6 +2576,388 @@ function isDarkColor(hex) {
   const b = parseInt(hex.substring(4, 6), 16);
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
   return brightness < 128;
+}
+
+// ==========================================
+// Layout Sketch Wireframe Renderer
+// ==========================================
+function renderLayoutBlueprintSketch() {
+  const tagsArr = Array.from(state.selectedTags);
+  const industry = tagsArr.find(t => TAGS_DICTIONARY.industry.includes(t)) || "Landing Page";
+  const style = tagsArr.find(t => TAGS_DICTIONARY.style.includes(t)) || "Modern";
+  
+  let headline = `Unleash Your Web Presence`;
+  let subheading = `A tailored ${style} design for your ${industry} crafted dynamically.`;
+  let buttonText = "Explore Features";
+  
+  if (industry === "Fitness") {
+    headline = "Apex Performance Center";
+    subheading = "Reach your peak condition with scientific coaching.";
+    buttonText = "Schedule Class";
+  } else if (industry === "Restaurant") {
+    headline = "The Culinary Canvas";
+    subheading = "Indulge in avant-garde gastronomy.";
+    buttonText = "Reserve a Table";
+  } else if (industry === "Portfolio") {
+    headline = "Digital Product Portfolio";
+    subheading = "A showcase of clean dashboards and user interfaces.";
+    buttonText = "View Gallery";
+  } else if (industry === "E-Commerce") {
+    headline = "Lumina Essentials";
+    subheading = "A curated selection of modern gadgets.";
+    buttonText = "Shop Best Sellers";
+  }
+  
+  studioBodyEl.innerHTML = `
+    <div class="sketch-panel">
+      <div class="sketch-header-bar">
+        <div class="sketch-title">🗺️ INTERACTIVE WIREFRAME BLUEPRINT</div>
+        <div style="font-size: 0.8rem; color: var(--accent-secondary); font-family: monospace; text-transform: uppercase;">[${style} + ${industry} Layout]</div>
+      </div>
+      
+      <div class="sketch-blueprint-grid">
+        <!-- NAVBAR BLOCK -->
+        <div class="sketch-block active" id="sketch-navbar">
+          <div class="block-label">
+            <span class="block-name">NAVBAR HEADER</span>
+            <label class="sketch-option-check">
+              <input type="checkbox" id="sketch-nav-sticky" ${state.navSticky ? 'checked' : ''}> Sticky Menu
+            </label>
+          </div>
+          <div class="blueprint-content nav-blueprint">
+            <div class="bp-logo">
+              <div class="bp-dot"></div>
+              <span>${industry.toUpperCase()}</span>
+            </div>
+            <div class="bp-links-wrapper">
+              <div class="bp-links-list" id="sketch-links-list"></div>
+              <button class="bp-add-link-btn" id="sketch-add-link-btn" title="Add Menu Link">+</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- HERO SECTION BLOCK -->
+        <div class="sketch-block ${state.enabledComponents.has('hero') ? 'active' : 'inactive'}" id="sketch-hero">
+          <div class="block-label">
+            <span class="block-name">HERO SECTION</span>
+            <label class="sketch-toggle">
+              <input type="checkbox" data-comp="hero" class="sketch-comp-toggle" ${state.enabledComponents.has('hero') ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="blueprint-content hero-blueprint">
+            <div class="bp-title-box">Headline: ${headline}</div>
+            <div class="bp-sub-box">Subheading: ${subheading}</div>
+            <div class="bp-btn-row">
+              <div class="bp-btn-box">${buttonText}</div>
+              <span id="bp-hero-buttons-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></span>
+              <button class="bp-add-btn-btn" id="sketch-add-hero-btn" title="Add Custom Button">+ Button</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE CARDS BLOCK -->
+        <div class="sketch-block ${state.enabledComponents.has('features') ? 'active' : 'inactive'}" id="sketch-features">
+          <div class="block-label">
+            <span class="block-name">FEATURE CARDS GRID</span>
+            <label class="sketch-toggle">
+              <input type="checkbox" data-comp="features" class="sketch-comp-toggle" ${state.enabledComponents.has('features') ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="blueprint-content cards-blueprint">
+            <div class="bp-grid-3">
+              <div class="bp-card-box">
+                <div class="bp-card-icon">📁</div>
+                <div class="bp-card-title">Feature 1</div>
+                <div class="bp-card-desc">Contextual item details...</div>
+              </div>
+              <div class="bp-card-box">
+                <div class="bp-card-icon">⚡</div>
+                <div class="bp-card-title">Feature 2</div>
+                <div class="bp-card-desc">Contextual item details...</div>
+              </div>
+              <div class="bp-card-box">
+                <div class="bp-card-icon">⚙️</div>
+                <div class="bp-card-title">Feature 3</div>
+                <div class="bp-card-desc">Contextual item details...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCROLLABLE DATA TABLE BLOCK -->
+        <div class="sketch-block ${state.enabledComponents.has('table') ? 'active' : 'inactive'}" id="sketch-table">
+          <div class="block-label">
+            <span class="block-name">SCROLLABLE DATA TABLE</span>
+            <label class="sketch-toggle">
+              <input type="checkbox" data-comp="table" class="sketch-comp-toggle" ${state.enabledComponents.has('table') ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="blueprint-content table-blueprint">
+            <div class="bp-table-meta">
+              <span>Columns Feed</span>
+              <button class="bp-table-action" id="sketch-table-cols-btn">Customize Columns</button>
+            </div>
+            <div class="bp-table-scroll">
+              <div class="bp-table-wire">
+                <div class="bp-table-header-row" id="sketch-table-headers"></div>
+                <div class="bp-table-row">
+                  <div class="bp-td">Row Data A</div>
+                  <div class="bp-td">Row Data B</div>
+                  <div class="bp-td">Row Data C</div>
+                  <div class="bp-td">Row Data D</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRICING MATRIX BLOCK -->
+        <div class="sketch-block ${state.enabledComponents.has('pricing') ? 'active' : 'inactive'}" id="sketch-pricing">
+          <div class="block-label">
+            <span class="block-name">PRICING MATRIX</span>
+            <label class="sketch-toggle">
+              <input type="checkbox" data-comp="pricing" class="sketch-comp-toggle" ${state.enabledComponents.has('pricing') ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="blueprint-content pricing-blueprint">
+            <div class="bp-grid-3">
+              <div class="bp-price-box">
+                <div class="bp-price-name">Starter</div>
+                <div class="bp-price-val">$19</div>
+                <div class="bp-price-btn">Select</div>
+              </div>
+              <div class="bp-price-box bp-featured">
+                <div class="bp-price-name">Pro</div>
+                <div class="bp-price-val">$49</div>
+                <div class="bp-price-btn featured">Select</div>
+              </div>
+              <div class="bp-price-box">
+                <div class="bp-price-name">Enterprise</div>
+                <div class="bp-price-val">$99</div>
+                <div class="bp-price-btn">Select</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FAQ ACCORDION BLOCK -->
+        <div class="sketch-block ${state.enabledComponents.has('faq') ? 'active' : 'inactive'}" id="sketch-faq">
+          <div class="block-label">
+            <span class="block-name">COLLAPSIBLE FAQ ACCORDION</span>
+            <label class="sketch-toggle">
+              <input type="checkbox" data-comp="faq" class="sketch-comp-toggle" ${state.enabledComponents.has('faq') ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="blueprint-content faq-blueprint">
+            <div class="bp-faq-row">Q: Dynamic accordion item 1 <span class="bp-faq-chevron">▼</span></div>
+            <div class="bp-faq-row">Q: Dynamic accordion item 2 <span class="bp-faq-chevron">▼</span></div>
+          </div>
+        </div>
+
+        <!-- CONTACT FORM BLOCK -->
+        <div class="sketch-block ${state.enabledComponents.has('form') ? 'active' : 'inactive'}" id="sketch-form">
+          <div class="block-label">
+            <span class="block-name">CONTACT INQUIRY FORM</span>
+            <label class="sketch-toggle">
+              <input type="checkbox" data-comp="form" class="sketch-comp-toggle" ${state.enabledComponents.has('form') ? 'checked' : ''}>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="blueprint-content form-blueprint">
+            <div class="bp-form-field">Name Field (Text)</div>
+            <div class="bp-form-field">Email Field (Email)</div>
+            <div class="bp-form-field text-area">Message Content Box</div>
+            <div class="bp-form-submit">Submit Inquiry</div>
+          </div>
+        </div>
+
+        <!-- FOOTER BLOCK -->
+        <div class="sketch-block active" id="sketch-footer">
+          <div class="block-label">
+            <span class="block-name">FOOTER SECTION</span>
+          </div>
+          <div class="blueprint-content footer-blueprint">
+            <span>© 2026 ${industry} • All rights reserved • Powered by WebCraft AI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderSketchNavbarLinks();
+  renderSketchHeroButtons();
+  renderSketchTableColumns();
+  setupSketchInteractionListeners();
+}
+
+function renderSketchNavbarLinks() {
+  const listEl = document.getElementById("sketch-links-list");
+  if (!listEl) return;
+  listEl.innerHTML = "";
+  state.menuLinks.forEach((link, idx) => {
+    const item = document.createElement("div");
+    item.className = "bp-link-item";
+    item.innerHTML = `${link} <span style="font-weight:bold;margin-left:0.15rem;opacity:0.6;">×</span>`;
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      state.menuLinks.splice(idx, 1);
+      renderSketchNavbarLinks();
+      renderMenuLinks();
+      compileAndSavePrototype();
+    });
+    listEl.appendChild(item);
+  });
+}
+
+function renderSketchHeroButtons() {
+  const container = document.getElementById("bp-hero-buttons-container");
+  if (!container) return;
+  container.innerHTML = "";
+  (state.heroCustomButtons || []).forEach((btn, idx) => {
+    const item = document.createElement("div");
+    item.className = "bp-btn-box custom-btn";
+    item.innerHTML = `${btn} <span style="font-weight:bold;margin-left:0.25rem;opacity:0.6;">×</span>`;
+    item.addEventListener("click", (e) => {
+      e.stopPropagation();
+      state.heroCustomButtons.splice(idx, 1);
+      renderSketchHeroButtons();
+      compileAndSavePrototype();
+    });
+    container.appendChild(item);
+  });
+}
+
+function renderSketchTableColumns() {
+  const container = document.getElementById("sketch-table-headers");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  if (!state.tableColumns || state.tableColumns.length === 0) {
+    const tagsArr = Array.from(state.selectedTags);
+    const industry = tagsArr.find(t => TAGS_DICTIONARY.industry.includes(t)) || "Landing Page";
+    if (industry === "Fitness") {
+      state.tableColumns = ["Class Name", "Instructor", "Time", "Intensity"];
+    } else if (industry === "Restaurant") {
+      state.tableColumns = ["Dish Name", "Category", "Preparation", "Price"];
+    } else if (industry === "Portfolio") {
+      state.tableColumns = ["Project Name", "Role", "Tech Stack", "Status"];
+    } else if (industry === "E-Commerce") {
+      state.tableColumns = ["Product Model", "SKU", "Stock", "Base Price"];
+    } else {
+      state.tableColumns = ["Service Node", "Location", "CPU Load", "Latency"];
+    }
+  }
+
+  state.tableColumns.forEach(col => {
+    const th = document.createElement("div");
+    th.className = "bp-th";
+    th.textContent = col;
+    container.appendChild(th);
+  });
+}
+
+function compileAndSavePrototype() {
+  if (state.selectedTags.size > 0) {
+    compilePrototypeCode();
+    // If the code tab is active, we also need to refresh the text block
+    if (state.activeTab === "code" || state.activeTab === "prototype") {
+      renderActiveStudioTab();
+    }
+  }
+}
+
+function setupSketchInteractionListeners() {
+  const stickyCheck = document.getElementById("sketch-nav-sticky");
+  if (stickyCheck) {
+    stickyCheck.addEventListener("change", (e) => {
+      state.navSticky = e.target.checked;
+      compileAndSavePrototype();
+    });
+  }
+
+  const addLinkBtn = document.getElementById("sketch-add-link-btn");
+  if (addLinkBtn) {
+    addLinkBtn.addEventListener("click", () => {
+      const name = prompt("Enter new navigation menu link name:");
+      if (name && name.trim()) {
+        const val = name.trim();
+        if (state.menuLinks.includes(val)) {
+          showToast("This menu link already exists!");
+          return;
+        }
+        if (state.menuLinks.length >= 8) {
+          showToast("Maximum of 8 menu buttons reached.");
+          return;
+        }
+        state.menuLinks.push(val);
+        renderSketchNavbarLinks();
+        renderMenuLinks();
+        compileAndSavePrototype();
+        showToast(`Added navigation button: ${val}`);
+      }
+    });
+  }
+
+  const addHeroBtn = document.getElementById("sketch-add-hero-btn");
+  if (addHeroBtn) {
+    addHeroBtn.addEventListener("click", () => {
+      const label = prompt("Enter label for custom Hero action button:");
+      if (label && label.trim()) {
+        if (!state.heroCustomButtons) state.heroCustomButtons = [];
+        state.heroCustomButtons.push(label.trim());
+        renderSketchHeroButtons();
+        compileAndSavePrototype();
+        showToast(`Added Custom Hero Button: ${label.trim()}`);
+      }
+    });
+  }
+
+  const tableColsBtn = document.getElementById("sketch-table-cols-btn");
+  if (tableColsBtn) {
+    tableColsBtn.addEventListener("click", () => {
+      const currentCols = (state.tableColumns || []).join(", ");
+      const nameStr = prompt("Enter column headers (comma separated, max 4 recommended):", currentCols);
+      if (nameStr && nameStr.trim()) {
+        state.tableColumns = nameStr.split(",").map(s => s.trim()).filter(s => s.length > 0);
+        renderSketchTableColumns();
+        compileAndSavePrototype();
+        showToast("Updated table columns layout!");
+      }
+    });
+  }
+
+  document.querySelectorAll(".sketch-comp-toggle").forEach(toggle => {
+    toggle.addEventListener("change", (e) => {
+      const compKey = e.target.dataset.comp;
+      const blockEl = document.getElementById(`sketch-${compKey}`);
+      
+      const sidebarCheckId = `comp-${compKey}`;
+      const sidebarCheck = document.getElementById(sidebarCheckId);
+      if (sidebarCheck) {
+        sidebarCheck.checked = e.target.checked;
+      }
+      
+      if (e.target.checked) {
+        state.enabledComponents.add(compKey);
+        if (blockEl) {
+          blockEl.classList.remove("inactive");
+          blockEl.classList.add("active");
+        }
+      } else {
+        state.enabledComponents.delete(compKey);
+        if (blockEl) {
+          blockEl.classList.remove("active");
+          blockEl.classList.add("inactive");
+        }
+      }
+      compileAndSavePrototype();
+    });
+  });
 }
 
 // Load
