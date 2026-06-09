@@ -983,7 +983,7 @@ body {
 }
 
 .sketch-block {
-  border: 2px dashed rgba(6, 182, 212, 0.25);
+  border: 2px dashed var(--sketch-secondary-alpha25);
   background: rgba(12, 20, 36, 0.75);
   border-radius: var(--radius-sm);
   padding: 1rem;
@@ -999,13 +999,13 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(45deg, rgba(6, 182, 212, 0.02) 0px, rgba(6, 182, 212, 0.02) 2px, transparent 2px, transparent 10px);
+  background: repeating-linear-gradient(45deg, var(--sketch-secondary-alpha02) 0px, var(--sketch-secondary-alpha02) 2px, transparent 2px, transparent 10px);
   pointer-events: none;
 }
 
 .sketch-block.active {
-  border-color: rgba(6, 182, 212, 0.8);
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15), inset 0 0 10px rgba(6, 182, 212, 0.1);
+  border-color: var(--sketch-secondary-alpha80);
+  box-shadow: 0 0 15px var(--sketch-secondary-alpha15), inset 0 0 10px var(--sketch-secondary-alpha10);
   opacity: 1;
 }
 
@@ -1046,7 +1046,7 @@ body {
   justify-content: space-between;
   align-items: center;
   background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(6, 182, 212, 0.15);
+  border: 1px solid var(--sketch-secondary-alpha15);
   padding: 0.65rem 1rem;
 }
 
@@ -1062,7 +1062,7 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent-secondary);
+  background: var(--sketch-secondary);
 }
 
 .bp-links-wrapper {
@@ -1078,8 +1078,8 @@ body {
 }
 
 .bp-link-item {
-  background: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: var(--sketch-secondary-alpha12);
+  border: 1px solid var(--sketch-secondary-alpha30);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   font-size: 0.725rem;
@@ -1099,8 +1099,8 @@ body {
 
 .bp-add-link-btn, .bp-add-btn-btn {
   background: transparent;
-  border: 1px dashed var(--accent-secondary);
-  color: var(--accent-secondary);
+  border: 1px dashed var(--sketch-secondary);
+  color: var(--sketch-secondary);
   width: 22px;
   height: 22px;
   border-radius: 4px;
@@ -1115,7 +1115,7 @@ body {
 }
 
 .bp-add-link-btn:hover, .bp-add-btn-btn:hover {
-  background: rgba(6, 182, 212, 0.15);
+  background: var(--sketch-secondary-alpha15);
   border-style: solid;
 }
 
@@ -1156,13 +1156,13 @@ body {
 }
 
 .sketch-toggle input:checked + .toggle-slider {
-  background-color: rgba(6, 182, 212, 0.25);
-  border-color: var(--accent-secondary);
+  background-color: var(--sketch-secondary-alpha25);
+  border-color: var(--sketch-secondary);
 }
 
 .sketch-toggle input:checked + .toggle-slider:before {
   transform: translateX(18px);
-  background-color: var(--accent-secondary);
+  background-color: var(--sketch-secondary);
 }
 
 /* Hero Blueprint elements */
@@ -1179,8 +1179,8 @@ body {
 
 .bp-title-box {
   width: 80%;
-  background: rgba(6, 182, 212, 0.05);
-  border: 1px solid rgba(6, 182, 212, 0.25);
+  background: var(--sketch-secondary-alpha05);
+  border: 1px solid var(--sketch-secondary-alpha25);
   padding: 0.5rem;
   font-weight: 700;
   color: var(--text-main);
@@ -1202,8 +1202,8 @@ body {
 }
 
 .bp-btn-box {
-  background: rgba(6, 182, 212, 0.15);
-  border: 1.5px solid var(--accent-secondary);
+  background: var(--sketch-secondary-alpha15);
+  border: 1.5px solid var(--sketch-secondary);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 4px;
@@ -1212,8 +1212,8 @@ body {
 }
 
 .bp-btn-box.custom-btn {
-  background: rgba(139, 92, 246, 0.15);
-  border-color: var(--accent-primary);
+  background: var(--sketch-primary-alpha25);
+  border-color: var(--sketch-primary);
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -1279,8 +1279,8 @@ body {
 
 .bp-table-action {
   background: transparent;
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  color: var(--accent-secondary);
+  border: 1px solid var(--sketch-secondary-alpha30);
+  color: var(--sketch-secondary);
   font-family: inherit;
   font-size: 0.7rem;
   padding: 0.15rem 0.4rem;
@@ -1290,14 +1290,14 @@ body {
 }
 
 .bp-table-action:hover {
-  background: rgba(6, 182, 212, 0.12);
-  border-color: var(--accent-secondary);
+  background: var(--sketch-secondary-alpha12);
+  border-color: var(--sketch-secondary);
 }
 
 .bp-table-scroll {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  border: 1px solid var(--sketch-secondary-alpha20);
   border-radius: 6px;
   background: rgba(0,0,0,0.3);
 }
@@ -1310,8 +1310,8 @@ body {
 
 .bp-table-header-row {
   display: flex;
-  background: rgba(6, 182, 212, 0.1);
-  border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+  background: var(--sketch-secondary-alpha10);
+  border-bottom: 1px solid var(--sketch-secondary-alpha20);
 }
 
 .bp-table-row {
@@ -1331,7 +1331,7 @@ body {
 
 .bp-th {
   font-weight: bold;
-  color: var(--accent-secondary);
+  color: var(--sketch-secondary);
 }
 
 /* Pricing blueprint */
@@ -1347,9 +1347,9 @@ body {
 }
 
 .bp-price-box.bp-featured {
-  border: 1.5px solid rgba(6, 182, 212, 0.5);
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
-  background: rgba(6, 182, 212, 0.03);
+  border: 1.5px solid var(--sketch-secondary-alpha50);
+  box-shadow: 0 0 10px var(--sketch-secondary-alpha10);
+  background: var(--sketch-secondary-alpha05);
 }
 
 .bp-price-name {
@@ -1361,7 +1361,7 @@ body {
 .bp-price-val {
   font-size: 1.25rem;
   font-weight: 800;
-  color: var(--accent-secondary);
+  color: var(--sketch-secondary);
 }
 
 .bp-price-btn {
@@ -1373,8 +1373,8 @@ body {
 }
 
 .bp-price-btn.featured {
-  background: rgba(6, 182, 212, 0.15);
-  border-color: var(--accent-secondary);
+  background: var(--sketch-secondary-alpha15);
+  border-color: var(--sketch-secondary);
   color: white;
 }
 
@@ -1392,7 +1392,7 @@ body {
 
 .bp-faq-chevron {
   font-size: 0.6rem;
-  color: var(--accent-secondary);
+  color: var(--sketch-secondary);
 }
 
 /* Form blueprint */
@@ -1411,8 +1411,8 @@ body {
 }
 
 .bp-form-submit {
-  background: rgba(6, 182, 212, 0.15);
-  border: 1.5px solid var(--accent-secondary);
+  background: var(--sketch-secondary-alpha15);
+  border: 1.5px solid var(--sketch-secondary);
   color: white;
   padding: 0.35rem;
   text-align: center;
@@ -1427,13 +1427,13 @@ body {
   align-items: center;
   gap: 0.35rem;
   font-size: 0.75rem;
-  color: var(--accent-secondary);
+  color: var(--sketch-secondary);
   cursor: pointer;
   user-select: none;
 }
 
 .sketch-option-check input[type="checkbox"] {
-  accent-color: var(--accent-secondary);
+  accent-color: var(--sketch-secondary);
   cursor: pointer;
 }
 

@@ -326,6 +326,13 @@ function applyThemePreset(preset, activeBtn) {
   fontSelectEl.value = preset.font;
   updateFontPreview();
   updateColorsInUI();
+  
+  // Recompile and reload active preview in real-time
+  if (state.selectedTags.size > 0) {
+    compilePrototypeCode();
+    renderActiveStudioTab();
+  }
+  
   showToast(`Applied preset: ${preset.name}`);
 }
 
@@ -348,24 +355,40 @@ function setupEventListeners() {
     state.theme.primary = e.target.value;
     primaryColorVal.textContent = state.theme.primary.toUpperCase();
     removePresetSelectionHighlight();
+    if (state.selectedTags.size > 0) {
+      compilePrototypeCode();
+      renderActiveStudioTab();
+    }
   });
   
   secondaryColorInput.addEventListener("input", (e) => {
     state.theme.secondary = e.target.value;
     secondaryColorVal.textContent = state.theme.secondary.toUpperCase();
     removePresetSelectionHighlight();
+    if (state.selectedTags.size > 0) {
+      compilePrototypeCode();
+      renderActiveStudioTab();
+    }
   });
   
   bgColorInput.addEventListener("input", (e) => {
     state.theme.bg = e.target.value;
     bgColorVal.textContent = state.theme.bg.toUpperCase();
     removePresetSelectionHighlight();
+    if (state.selectedTags.size > 0) {
+      compilePrototypeCode();
+      renderActiveStudioTab();
+    }
   });
   
   textColorInput.addEventListener("input", (e) => {
     state.theme.text = e.target.value;
     textColorVal.textContent = state.theme.text.toUpperCase();
     removePresetSelectionHighlight();
+    if (state.selectedTags.size > 0) {
+      compilePrototypeCode();
+      renderActiveStudioTab();
+    }
   });
   
   fontSelectEl.addEventListener("change", () => {
@@ -3798,6 +3821,32 @@ function renderLayoutBlueprintSketch() {
   const industry = tagsArr.find(t => TAGS_DICTIONARY.industry.includes(t)) || "Landing Page";
   const style = tagsArr.find(t => TAGS_DICTIONARY.style.includes(t)) || "Modern";
   
+  // Parse colors to RGB to generate dynamic transparency values for the layout sketch
+  const hexToRgbHelper = (hex) => {
+    let h = hex.startsWith('#') ? hex.substring(1) : hex;
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    return {
+      r: parseInt(h.substring(0, 2), 16),
+      g: parseInt(h.substring(2, 4), 16),
+      b: parseInt(h.substring(4, 6), 16)
+    };
+  };
+
+  const primaryRgb = hexToRgbHelper(state.theme.primary);
+  const secondaryRgb = hexToRgbHelper(state.theme.secondary);
+  
+  const primaryAlpha25 = `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.25)`;
+  const secondaryAlpha80 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.80)`;
+  const secondaryAlpha50 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.50)`;
+  const secondaryAlpha30 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.30)`;
+  const secondaryAlpha25 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.25)`;
+  const secondaryAlpha20 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.20)`;
+  const secondaryAlpha15 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.15)`;
+  const secondaryAlpha12 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.12)`;
+  const secondaryAlpha10 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.10)`;
+  const secondaryAlpha05 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.05)`;
+  const secondaryAlpha02 = `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.02)`;
+
   let headline = `Unleash Your Web Presence`;
   let subheading = `A tailored ${style} design for your ${industry} crafted dynamically.`;
   let buttonText = "Explore Features";
@@ -3821,10 +3870,24 @@ function renderLayoutBlueprintSketch() {
   }
   
   studioBodyEl.innerHTML = `
-    <div class="sketch-panel">
+    <div class="sketch-panel" style="
+      --sketch-primary: ${state.theme.primary};
+      --sketch-secondary: ${state.theme.secondary};
+      --sketch-secondary-alpha80: ${secondaryAlpha80};
+      --sketch-secondary-alpha50: ${secondaryAlpha50};
+      --sketch-secondary-alpha30: ${secondaryAlpha30};
+      --sketch-secondary-alpha25: ${secondaryAlpha25};
+      --sketch-secondary-alpha20: ${secondaryAlpha20};
+      --sketch-secondary-alpha15: ${secondaryAlpha15};
+      --sketch-secondary-alpha12: ${secondaryAlpha12};
+      --sketch-secondary-alpha10: ${secondaryAlpha10};
+      --sketch-secondary-alpha05: ${secondaryAlpha05};
+      --sketch-secondary-alpha02: ${secondaryAlpha02};
+      --sketch-primary-alpha25: ${primaryAlpha25};
+    ">
       <div class="sketch-header-bar">
         <div class="sketch-title">🗺️ INTERACTIVE WIREFRAME BLUEPRINT</div>
-        <div style="font-size: 0.8rem; color: var(--accent-secondary); font-family: monospace; text-transform: uppercase;">[${style} + ${industry} Layout]</div>
+        <div style="font-size: 0.8rem; color: var(--sketch-secondary); font-family: monospace; text-transform: uppercase;">[${style} + ${industry} Layout]</div>
       </div>
       
       <div class="sketch-blueprint-grid">
