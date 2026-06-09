@@ -37,9 +37,9 @@ WebCraft AI operates using a **Dual-Engine Pipeline** to bridge the gap between 
 
 ---
 
-## 📅 June Update: Idea Generation
+## 📅 June Update: Idea Generation & Visual Layout Planner
 
-The core focus of this update is **Contextual Pairwise Layout Synthesis**. 
+The core focus of this update is **Contextual Pairwise Layout Synthesis** and **Interactive Wireframe Blueprint Planning**.
 
 Rather than relying on static, generic structures, the generation engine focuses on how contrasting keywords interact:
 *   **Content Shifting**: Pairing a sector with a vibe (e.g., *Fitness* + *Artistic*) rewrites the copywriting database dynamically (e.g., changing standard coach references to *"Somatic Geometry"* and organic movements) instead of serving standard templates.
@@ -48,3 +48,11 @@ Rather than relying on static, generic structures, the generation engine focuses
     *   `Brutalist`: solid black borders (`border: 3px solid`), sharp square corners, and solid flat shadows.
     *   `Artistic`: glassmorphic panels, curved organic borders (`border-radius: 40px 10px`), and blurred background paint-blobs.
     *   `Minimalist`: borderless spacing with simple, thin divider lines.
+    *   `Retro`: dotted/dashed layouts, cream accents, and monospaced typefaces.
+    *   `Playful`: extra-rounded corners, colorful tags, and bounce animations.
+*   **Interactive Layout Sketch (Blueprint Wireframe)**: A dedicated planning tab that renders a blueprint schematic of the page. Users can:
+    *   Toggle sections (Hero, Features, Table, Pricing, FAQ, Form) on/off, fading inactive blocks.
+    *   Add or delete navigation links in the header, or add custom action buttons in the Hero block.
+    *   Customize column headers for the scrollable data table.
+    *   Toggle sticky menu settings.
+*   **Modular Component Compiling**: Real-time assembly of responsive cards, database tables, pricing matrices, collapsible FAQ accordions, and stylized contact forms.

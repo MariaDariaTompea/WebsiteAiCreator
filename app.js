@@ -1168,15 +1168,74 @@ function compilePrototypeCode() {
         content: '';
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+        background: 
+          linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+          linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
         background-size: 100% 4px, 6px 100%;
         pointer-events: none;
-        z-index: 999;
+        z-index: 9999;
+        animation: crt-flicker 0.15s infinite;
+      }
+      @keyframes crt-flicker {
+        0% { opacity: 0.94; }
+        50% { opacity: 1.0; }
+        100% { opacity: 0.94; }
       }
       h1, h2, h3 {
         text-shadow: 0 0 10px var(--primary);
         letter-spacing: 2px;
         text-transform: uppercase;
+      }
+      .glitch-text {
+        position: relative;
+        display: inline-block;
+      }
+      .glitch-text::before, .glitch-text::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: var(--bg);
+        overflow: hidden;
+      }
+      .glitch-text::before {
+        left: 2px;
+        text-shadow: -2px 0 var(--secondary);
+        clip-path: rect(10px, 9999px, 30px, 0);
+        animation: glitch-anim-1 2s infinite linear alternate-reverse;
+      }
+      .glitch-text::after {
+        left: -2px;
+        text-shadow: -2px 0 var(--primary), 0 2px var(--secondary);
+        clip-path: rect(40px, 9999px, 80px, 0);
+        animation: glitch-anim-2 2s infinite linear alternate-reverse;
+      }
+      @keyframes glitch-anim-1 {
+        0% { clip-path: inset(20% 0 30% 0); }
+        20% { clip-path: inset(60% 0 10% 0); }
+        40% { clip-path: inset(40% 0 50% 0); }
+        60% { clip-path: inset(80% 0 5% 0); }
+        80% { clip-path: inset(10% 0 70% 0); }
+        100% { clip-path: inset(30% 0 20% 0); }
+      }
+      @keyframes glitch-anim-2 {
+        0% { clip-path: inset(15% 0 45% 0); }
+        25% { clip-path: inset(75% 0 5% 0); }
+        50% { clip-path: inset(35% 0 55% 0); }
+        75% { clip-path: inset(85% 0 10% 0); }
+        100% { clip-path: inset(55% 0 25% 0); }
+      }
+      .cyber-badge {
+        font-family: monospace;
+        font-size: 0.7rem;
+        color: var(--secondary);
+        border: 1px solid var(--secondary);
+        padding: 0.2rem 0.5rem;
+        display: inline-block;
+        margin-bottom: 0.75rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        background: rgba(0, 240, 255, 0.05);
+        box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
       }
       .card {
         position: relative;
@@ -2118,10 +2177,11 @@ function compilePrototypeCode() {
     <header class="hero" id="home">
       <div class="hero-glow"></div>
       <div class="hero-content">
-        <h1>${headline}</h1>
+        ${isCyberpunkVibe ? `<div class="cyber-badge">[SYS_DATALINK // TERMINAL_LINK // STATUS: OK]</div>` : ''}
+        <h1 class="${isCyberpunkVibe ? 'glitch-text' : ''}" ${isCyberpunkVibe ? `data-text="${headline}"` : ''}>${headline}</h1>
         <p>${subheading}</p>
         <div class="hero-actions" style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; align-items: center;">
-          <button class="btn btn-primary">${buttonText}</button>
+          <button class="btn btn-primary ${isCyberpunkVibe ? 'glitch-text' : ''}" ${isCyberpunkVibe ? `data-text="${buttonText}"` : ''}>${buttonText}</button>
           ${customHeroBtnsHtml}
         </div>
         ${isCyberpunkVibe ? `
