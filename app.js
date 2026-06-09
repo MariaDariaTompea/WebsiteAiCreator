@@ -2046,9 +2046,10 @@ function compilePrototypeCode() {
   }
   
   // Compile vibe scripts to run client-side in the sandbox
-  let vibeScript = "";
-  if (isSakuraMood) {
-    vibeScript = `
+  let compiledMoodScripts = "";
+  
+  if (tagsArr.includes("Sakura")) {
+    compiledMoodScripts += `
       document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.createElement('canvas');
         canvas.id = 'sakura-canvas';
@@ -2121,8 +2122,412 @@ function compilePrototypeCode() {
         update();
       });
     `;
-  } else if (isGothicStyle) {
-    vibeScript = `
+  }
+  
+  if (tagsArr.includes("Dark/Mysterious")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'mysterious-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.35;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const clouds = [];
+        for (let i = 0; i < 15; i++) {
+          clouds.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 150 + 100,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            alpha: Math.random() * 0.15 + 0.05
+          });
+        }
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          clouds.forEach(c => {
+            c.x += c.vx;
+            c.y += c.vy;
+            if (c.x - c.r > width) c.x = -c.r;
+            if (c.x + c.r < 0) c.x = width + c.r;
+            if (c.y - c.r > height) c.y = -c.r;
+            if (c.y + c.r < 0) c.y = height + c.r;
+            
+            let grad = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+            grad.addColorStop(0, 'rgba(0, 0, 0, ' + c.alpha + ')');
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(c.x, c.y, c.r, 0, 2 * Math.PI);
+            ctx.fill();
+          });
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Light/Airy")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'airy-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.6;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const orbs = [];
+        for (let i = 0; i < 20; i++) {
+          orbs.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 30 + 15,
+            vy: -(Math.random() * 0.4 + 0.1),
+            alpha: Math.random() * 0.3 + 0.1,
+            wobble: Math.random() * 10
+          });
+        }
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          orbs.forEach(o => {
+            o.y += o.vy;
+            o.x += Math.sin(o.wobble) * 0.2;
+            o.wobble += 0.01;
+            if (o.y < -50) {
+              o.y = height + 50;
+              o.x = Math.random() * width;
+            }
+            let grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+            grad.addColorStop(0, 'rgba(255, 255, 255, ' + o.alpha + ')');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(o.x, o.y, o.r, 0, 2 * Math.PI);
+            ctx.fill();
+          });
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Neon/Glow")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('click', (e) => {
+          const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#ff007f';
+          const ring = document.createElement('div');
+          ring.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; width:10px; height:10px; border:2px solid " + primaryColor + "; border-radius:50%; pointer-events:none; z-index:9999; box-shadow: 0 0 15px " + primaryColor + ", inset 0 0 15px " + primaryColor + "; transition: all 0.8s cubic-bezier(0.1, 0.8, 0.3, 1); transform: translate(-50%, -50%); opacity: 1;";
+          document.body.appendChild(ring);
+          requestAnimationFrame(() => {
+            ring.style.width = "180px";
+            ring.style.height = "180px";
+            ring.style.opacity = "0";
+          });
+          setTimeout(() => ring.remove(), 800);
+        });
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Warm/Cozy")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'cozy-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.75;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const embers = [];
+        for (let i = 0; i < 25; i++) {
+          embers.push({
+            x: Math.random() * width,
+            y: height + Math.random() * 200,
+            r: Math.random() * 3 + 1,
+            vy: -(Math.random() * 0.8 + 0.3),
+            vx: (Math.random() - 0.5) * 0.3,
+            alpha: Math.random() * 0.8 + 0.2,
+            life: Math.random() * 200 + 100
+          });
+        }
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          embers.forEach(e => {
+            e.y += e.vy;
+            e.x += e.vx;
+            e.life--;
+            if (e.y < -10 || e.life <= 0) {
+              e.y = height + 10;
+              e.x = Math.random() * width;
+              e.life = Math.random() * 200 + 100;
+            }
+            ctx.beginPath();
+            ctx.arc(e.x, e.y, e.r, 0, 2 * Math.PI);
+            ctx.fillStyle = "rgba(249, 115, 22, " + e.alpha * (e.life/300) + ")";
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = "#f97316";
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          });
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Professional")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'professional-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.45;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const nodes = [];
+        for (let i = 0; i < 22; i++) {
+          nodes.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: (Math.random() - 0.5) * 0.4,
+            r: 2.5
+          });
+        }
+        
+        const lineColor = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || 'rgba(255,255,255,0.1)';
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          nodes.forEach(n => {
+            n.x += n.vx;
+            n.y += n.vy;
+            if (n.x < 0 || n.x > width) n.vx *= -1;
+            if (n.y < 0 || n.y > height) n.vy *= -1;
+            
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r, 0, 2 * Math.PI);
+            ctx.fillStyle = lineColor;
+            ctx.fill();
+          });
+          
+          ctx.strokeStyle = lineColor;
+          ctx.lineWidth = 0.5;
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+              if (dist < 120) {
+                ctx.globalAlpha = 1 - (dist / 120);
+                ctx.beginPath();
+                ctx.moveTo(nodes[i].x, nodes[i].y);
+                ctx.lineTo(nodes[j].x, nodes[j].y);
+                ctx.stroke();
+              }
+            }
+          }
+          ctx.globalAlpha = 1.0;
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Artistic")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const blob = document.createElement('div');
+        const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#8b5cf6';
+        blob.style.cssText = "position:fixed; width:200px; height:200px; background:radial-gradient(circle, " + primaryColor + "1a 0%, transparent 70%); pointer-events:none; z-index:9999; transform:translate(-50%, -50%); transition: left 0.1s ease-out, top 0.1s ease-out;";
+        document.body.appendChild(blob);
+        document.addEventListener('mousemove', (e) => {
+          blob.style.left = e.clientX + 'px';
+          blob.style.top = e.clientY + 'px';
+        });
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Bold/Loud")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('mousemove', (e) => {
+          if (Math.random() > 0.15) return;
+          const block = document.createElement('div');
+          const secondaryColor = getComputedStyle(document.body).getPropertyValue('--secondary').trim() || '#ff3e3e';
+          block.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; width:16px; height:16px; background:" + secondaryColor + "; pointer-events:none; z-index:9998; border: 2px solid #000; transform: translate(-50%, -50%) rotate(" + (Math.random() * 360) + "deg); transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28); opacity: 0.9;";
+          document.body.appendChild(block);
+          requestAnimationFrame(() => {
+            block.style.transform = "translate(-50%, -50%) scale(0) rotate(90deg)";
+            block.style.opacity = "0";
+          });
+          setTimeout(() => block.remove(), 600);
+        });
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Tech/Futuristic")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'tech-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.18;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const columns = Math.floor(width / 20) + 1;
+        const ypos = Array(columns).fill(0);
+        const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#00ff7f';
+        
+        function update() {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+          ctx.fillRect(0, 0, width, height);
+          ctx.fillStyle = primaryColor;
+          ctx.font = '12px monospace';
+          
+          ypos.forEach((y, ind) => {
+            const text = Math.random() > 0.5 ? '1' : '0';
+            const x = ind * 20;
+            ctx.fillText(text, x, y);
+            if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
+            else ypos[ind] = y + 15;
+          });
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Elegant")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'elegant-canvas';
+        canvas.style.cssText = "position:fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:-1; opacity:0.8;";
+        document.body.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+        
+        const sparkles = [];
+        const primaryColor = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#ec4899';
+        
+        for (let i = 0; i < 28; i++) {
+          sparkles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 1.5 + 0.5,
+            vy: Math.random() * 0.15 + 0.05,
+            vx: Math.random() * 0.15 + 0.05,
+            alpha: Math.random(),
+            flickerSpeed: Math.random() * 0.02 + 0.01
+          });
+        }
+        
+        function update() {
+          ctx.clearRect(0, 0, width, height);
+          sparkles.forEach(s => {
+            s.y -= s.vy;
+            s.x += s.vx;
+            s.alpha += s.flickerSpeed;
+            if (s.y < -10) s.y = height + 10;
+            if (s.x > width + 10) s.x = -10;
+            
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+            ctx.fillStyle = primaryColor;
+            ctx.globalAlpha = Math.abs(Math.sin(s.alpha)) * 0.7;
+            ctx.fill();
+          });
+          ctx.globalAlpha = 1.0;
+          requestAnimationFrame(update);
+        }
+        update();
+      });
+    `;
+  }
+  
+  if (tagsArr.includes("Vibrant")) {
+    compiledMoodScripts += `
+      document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('click', (e) => {
+          for (let i = 0; i < 3; i++) {
+            const rip = document.createElement('div');
+            const delay = i * 150;
+            const secondaryColor = getComputedStyle(document.body).getPropertyValue('--secondary').trim() || '#00f0ff';
+            rip.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; width:0px; height:0px; border:1.5px solid " + secondaryColor + "; border-radius:50%; pointer-events:none; z-index:9999; transition: all 1.2s cubic-bezier(0.1, 0.8, 0.2, 1); transform: translate(-50%, -50%); opacity: 0.8; transition-delay: " + delay + "ms;";
+            document.body.appendChild(rip);
+            requestAnimationFrame(() => {
+              rip.style.width = "160px";
+              rip.style.height = "160px";
+              rip.style.opacity = "0";
+            });
+            setTimeout(() => rip.remove(), 1200 + delay);
+          }
+        });
+      });
+    `;
+  }
+
+  let compiledStyleScripts = "";
+  if (isGothicStyle) {
+    compiledStyleScripts = `
       document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.createElement('canvas');
         canvas.id = 'gothic-canvas';
@@ -2182,7 +2587,7 @@ function compilePrototypeCode() {
       });
     `;
   } else if (isRomanticStyle) {
-    vibeScript = `
+    compiledStyleScripts = `
       document.addEventListener('DOMContentLoaded', () => {
         document.addEventListener('click', (e) => {
           for (let i = 0; i < 6; i++) {
@@ -2204,20 +2609,37 @@ function compilePrototypeCode() {
         });
       });
     `;
-  } else if (isArtisticVibe) {
-    vibeScript = `
+  } else if (isPlayfulVibe) {
+    compiledStyleScripts = `
       document.addEventListener('DOMContentLoaded', () => {
-        const blob = document.createElement('div');
-        blob.style.cssText = "position:fixed; width:200px; height:200px; background:radial-gradient(circle, ${c.primary}15 0%, transparent 70%); pointer-events:none; z-index:9999; transform:translate(-50%, -50%); transition: left 0.1s ease-out, top 0.1s ease-out;";
-        document.body.appendChild(blob);
-        document.addEventListener('mousemove', (e) => {
-          blob.style.left = e.clientX + 'px';
-          blob.style.top = e.clientY + 'px';
+        const emojis = ['🎈', '✨', '⭐', '🦄', '🍿', '🎉', '🎨', '🚀', '🌈'];
+        document.addEventListener('click', (e) => {
+          const p = document.createElement('div');
+          p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          p.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; font-size: 2rem; pointer-events:none; z-index:9999; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translate(-50%, -50%); opacity: 1;";
+          document.body.appendChild(p);
+          requestAnimationFrame(() => {
+            p.style.transform = "translate(-50%, -180%) scale(1.6) rotate(15deg)";
+            p.style.opacity = "0";
+          });
+          setTimeout(() => p.remove(), 800);
+        });
+      });
+    `;
+  } else if (isBrutalistVibe) {
+    compiledStyleScripts = `
+      document.addEventListener('DOMContentLoaded', () => {
+        const bar = document.createElement('div');
+        bar.style.cssText = "position:fixed; top:0; left:0; height:8px; background:var(--secondary); border-bottom:3px solid var(--text); z-index:9999; width:0%;";
+        document.body.appendChild(bar);
+        window.addEventListener('scroll', () => {
+          const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+          bar.style.width = pct + '%';
         });
       });
     `;
   } else if (isCyberpunkVibe) {
-    vibeScript = `
+    compiledStyleScripts = `
       document.addEventListener('DOMContentLoaded', () => {
         const body = document.getElementById('logs-body');
         if (!body) return;
@@ -2246,35 +2668,6 @@ function compilePrototypeCode() {
           setTimeout(addLog, 2500 + Math.random() * 2000);
         }
         addLog();
-      });
-    `;
-  } else if (isPlayfulVibe) {
-    vibeScript = `
-      document.addEventListener('DOMContentLoaded', () => {
-        const emojis = ['🎈', '✨', '⭐', '🦄', '🍿', '🎉', '🎨', '🚀', '🌈'];
-        document.addEventListener('click', (e) => {
-          const p = document.createElement('div');
-          p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-          p.style.cssText = "position:fixed; left:" + e.clientX + "px; top:" + e.clientY + "px; font-size: 2rem; pointer-events:none; z-index:9999; transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translate(-50%, -50%); opacity: 1;";
-          document.body.appendChild(p);
-          requestAnimationFrame(() => {
-            p.style.transform = "translate(-50%, -180%) scale(1.6) rotate(15deg)";
-            p.style.opacity = "0";
-          });
-          setTimeout(() => p.remove(), 800);
-        });
-      });
-    `;
-  } else if (isBrutalistVibe) {
-    vibeScript = `
-      document.addEventListener('DOMContentLoaded', () => {
-        const bar = document.createElement('div');
-        bar.style.cssText = "position:fixed; top:0; left:0; height:8px; background:var(--secondary); border-bottom:3px solid var(--text); z-index:9999; width:0%;";
-        document.body.appendChild(bar);
-        window.addEventListener('scroll', () => {
-          const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
-          bar.style.width = pct + '%';
-        });
       });
     `;
   }
@@ -3203,8 +3596,11 @@ function compilePrototypeCode() {
       });
     });
   `;
-  if (vibeScript) {
-    compiledScripts += "\n" + vibeScript;
+  if (compiledMoodScripts) {
+    compiledScripts += "\n" + compiledMoodScripts;
+  }
+  if (compiledStyleScripts) {
+    compiledScripts += "\n" + compiledStyleScripts;
   }
 
   // Assemble HTML
@@ -3824,6 +4220,16 @@ function setupPaletteCreator() {
     // Render
     drawWheelAndHandles();
     updateSlotDots();
+
+    // Staggered redraws to guarantee GPU buffer sync after CSS transition
+    setTimeout(() => {
+      drawWheelAndHandles();
+      updateSlotDots();
+    }, 100);
+    setTimeout(() => {
+      drawWheelAndHandles();
+      updateSlotDots();
+    }, 300);
   });
   
   // Close modal
