@@ -4,7 +4,7 @@ A high-fidelity prototyping application that synthesizes user-selected keywords,
 
 ---
 
-## 📄 Documentation
+## Documentation
 
 A full academic-style project report is available in the documentation folder:
 *   **LaTeX Source**: [documentation/main.tex](file:///d:/SITEGENERATOR/documentation/main.tex)
@@ -13,7 +13,7 @@ A full academic-style project report is available in the documentation folder:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 1.  Start a local HTTP server in the root directory (already configured in the background):
     ```bash
@@ -26,7 +26,7 @@ A full academic-style project report is available in the documentation folder:
 
 ---
 
-## 💡 Basic Concepts
+## Basic Concepts
 
 WebCraft AI operates using a **Dual-Engine Pipeline** to bridge the gap between abstract design ideation and code generation:
 
@@ -37,7 +37,7 @@ WebCraft AI operates using a **Dual-Engine Pipeline** to bridge the gap between 
 
 ---
 
-## 📅 June Update: Idea Generation & Visual Layout Planner
+## June Update: Idea Generation & Visual Layout Planner
 
 The core focus of this update is **Contextual Pairwise Layout Synthesis** and **Interactive Wireframe Blueprint Planning**.
 
@@ -57,7 +57,7 @@ Rather than relying on static, generic structures, the generation engine focuses
     *   Toggle sticky menu settings.
 *   **Modular Component Compiling**: Real-time assembly of responsive cards, database tables, pricing matrices, collapsible FAQ accordions, and stylized contact forms.
 
-### 🎨 June Update #2: Custom Palette Studio & Color-Coherent Theming
+### June Update #2: Custom Palette Studio & Color-Coherent Theming
 
 This update focuses on **Dynamic Color Propagation** — ensuring every pixel of the generated prototype and layout sketch adapts to the user's chosen palette, not just the basic CSS variables.
 
